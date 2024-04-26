@@ -23,7 +23,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }} # SSH_KEY is the private key of the ubuntu server, public key must go to authorized_keys file
           script: |
             cd /var/www/commitstreams-client
             export NVM_DIR=~/.nvm

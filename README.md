@@ -1,6 +1,6 @@
 ## Minimal [(Free version)](https://minimal-kit-react.vercel.app/)
 
-![license](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Deploy client](https://github.com/foyzulkarim/commitstreams-client/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/foyzulkarim/commitstreams-client/actions/workflows/deploy.yml)
 
 > Free React Admin Dashboard made with Material-UI components and React.
 

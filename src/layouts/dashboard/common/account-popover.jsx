@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -10,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import { account } from 'src/_mock/account';
+import { AuthContext } from 'src/contexts/AuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +34,10 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const navigate = useNavigate();
+  const { clearAuthState } = useContext(AuthContext);
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -40,6 +46,26 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
+
+  const handleLogout = async () => {
+    console.log('logout');
+    try {
+      const response = await fetch(`${apiUrl}/logout`, {
+        method: 'POST', // Or appropriate method for your endpoint
+        credentials: 'include',
+      });
+
+      const res = await response.json();
+      console.log('logout response:', res);
+
+      // Clear any additional user data
+      clearAuthState();
+      navigate('/login', { replace: true })
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    setOpen(null);
+  }
 
   return (
     <>
@@ -105,7 +131,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout

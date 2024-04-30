@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -34,7 +33,6 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const navigate = useNavigate();
   const { clearAuthState } = useContext(AuthContext);
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -50,17 +48,9 @@ export default function AccountPopover() {
   const handleLogout = async () => {
     console.log('logout');
     try {
-      const response = await fetch(`${apiUrl}/logout`, {
-        method: 'POST', // Or appropriate method for your endpoint
-        credentials: 'include',
-      });
-
-      const res = await response.json();
-      console.log('logout response:', res);
-
       // Clear any additional user data
       clearAuthState();
-      navigate('/login', { replace: true })
+      window.location.href = `${apiUrl}/logout`; // Adjust for your backend port
     } catch (error) {
       console.error('Logout error:', error);
     }

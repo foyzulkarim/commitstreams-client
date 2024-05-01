@@ -23,15 +23,14 @@ const AuthProvider = ({ children }) => {
 
         if (!response.ok) {
           throw new Error('Profile fetch failed');
+        } else {
+          const data = await response.json();
+          setAuthState(data);
+          navigate('/login');
         }
-
-        const data = await response.json();
-        setAuthState(data);
-        navigate('/');
       } catch (error) {
-        console.error('Error fetching profile:', error);
         clearAuthState();
-        navigate('/', { replace: true });
+        navigate('/login', { replace: true });
       }
     };
     console.log('fetchUserProfile:');
@@ -51,9 +50,13 @@ const AuthProvider = ({ children }) => {
     setUserProfile(null);
   };
 
+  const logout = async () => {
+    window.location.href = `${apiUrl}/logout`;
+  }
+
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <AuthContext.Provider value={{ isAuthenticated, userProfile, setAuthState, clearAuthState }}>
+    <AuthContext.Provider value={{ isAuthenticated, userProfile, setAuthState, clearAuthState, logout }}>
       {children}
     </AuthContext.Provider>
   );

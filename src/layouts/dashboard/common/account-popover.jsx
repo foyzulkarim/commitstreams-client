@@ -33,9 +33,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const { clearAuthState } = useContext(AuthContext);
-
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const { logout, userProfile } = useContext(AuthContext);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -48,14 +46,16 @@ export default function AccountPopover() {
   const handleLogout = async () => {
     console.log('logout');
     try {
-      // Clear any additional user data
-      clearAuthState();
-      window.location.href = `${apiUrl}/logout`; // Adjust for your backend port
+      await logout();
     } catch (error) {
       console.error('Logout error:', error);
     }
     setOpen(null);
   }
+
+  console.log('account:', { userProfile });
+  const name = userProfile?.displayName || (userProfile?.username || account.displayName);
+  const email = userProfile?.email || '';
 
   return (
     <>
@@ -72,15 +72,15 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          src={userProfile?.avatarUrl ?? account.photoURL}
+          alt={name}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {name}
         </Avatar>
       </IconButton>
 
@@ -101,10 +101,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {email}
           </Typography>
         </Box>
 

@@ -33,10 +33,7 @@ export default function AlertDialog({ open, setOpen, user, setSelectedUser }) {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Disagree</Button>
-        <Button onClick={handleClose} autoFocus>
-          Agree
-        </Button>
+        <Button disabled onClick={handleClose}>Follow</Button>
       </DialogActions>
     </Dialog>
   );

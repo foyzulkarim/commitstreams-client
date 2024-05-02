@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import { format, formatDistanceToNow } from 'date-fns'
 
 import Stack from '@mui/material/Stack';
@@ -11,8 +12,43 @@ import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
+function TextHighlight({ text, searchKeyword }) {
+  const [highlightedText, setHighlightedText] = useState(text);
+
+  useEffect(() => {
+    if (searchKeyword) {
+      const regex = new RegExp(`(${searchKeyword})`, 'gi');
+      const parts = text.split(regex);
+      const newHighlightedText = parts.map((part, i) =>
+        part.toLowerCase() === searchKeyword.toLowerCase() ? (
+          <mark key={i}>{part}</mark>
+        ) : (
+          part
+        )
+      );
+      setHighlightedText(newHighlightedText);
+    } else {
+      setHighlightedText(text); // Reset to original text
+    }
+  }, [text, searchKeyword]);
+
+  return (
+    <Stack direction="row" spacing={1}>
+      <Typography variant="subtitle2">
+        {highlightedText}
+      </Typography>
+    </Stack>
+  );
+}
+
+TextHighlight.propTypes = {
+  text: PropTypes.string.isRequired,
+  searchKeyword: PropTypes.string,
+}
+
+
 export default function UserTableRow({
-  selected,
+  searchTerm,
   username,
   avatarUrl,
   displayName,
@@ -26,13 +62,17 @@ export default function UserTableRow({
       <TableCell component="th" scope="row" >
         <Stack direction="row" alignItems="center" spacing={2}>
           <Avatar alt={username} src={avatarUrl} />
-          <Typography variant="subtitle2" noWrap>
-            {username}
-          </Typography>
+          <TextHighlight
+            text={username}
+            searchKeyword={searchTerm}
+          />
         </Stack>
       </TableCell>
 
-      <TableCell>{displayName}</TableCell>
+      <TableCell><TextHighlight
+        text={displayName}
+        searchKeyword={searchTerm}
+      /></TableCell>
 
       <TableCell>{format(new Date(created_at), 'dd MMMM yyyy')} ({formatDistanceToNow(new Date(created_at), { addSuffix: true })})</TableCell>
 
@@ -52,6 +92,6 @@ UserTableRow.propTypes = {
   location: PropTypes.any,
   username: PropTypes.any,
   created_at: PropTypes.any,
-  selected: PropTypes.any,
+  searchTerm: PropTypes.string,
   public_repos: PropTypes.number,
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -15,56 +15,88 @@ import UserDialog from './user-dialog';
 import TableNoData from '../table-no-data';
 import UserTableRow from '../user-table-row';
 import UserTableHead from '../user-table-head';
-import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
+
 export default function UserPage() {
+
+  const rowsPerPage = 10;
+
+  const fetchWrapper = async (url) => {
+    try {
+      const response = await fetch(url, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Fetch failed: ${error}`);
+      throw error;
+    }
+  };
+
 
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('username');
 
   const [filterName, setFilterName] = useState('');
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   //  users
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [total, setTotal] = useState(0);
 
   const [openDialog, setOpenDialog] = useState(false);
 
+  const prevFilterNameRef = useRef();
+
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL;
+    const prevFilterName = prevFilterNameRef.current;
+
+    console.log('page', page);
+
     const loadUsers = async () => {
       try {
         // Load users from the backend using fetch
-        const response = await fetch(`${apiUrl}/v1/users`, {
-          credentials: 'include'  // Crucial setting 
-        });
-
-        if (!response.ok) {
-          // throw new Error('Users fetch failed');
-          console.error('Users fetch failed', response);
-        } else {
-          const data = await response.json();
-          console.log('Users:', { data });
-          setUsers(data)
-        }
-
-
+        const data = await fetchWrapper(`${apiUrl}/v1/users/search?keyword=${filterName}&page=${page}&orderBy=${orderBy}&order=${order}`);
+        setUsers(data);
       } catch (error) {
         console.error('Load users error:', error);
       }
     };
 
+    const loadTotal = async () => {
+      try {
+        // Load users from the backend using fetch
+        const count = await fetchWrapper(`${apiUrl}/v1/users/count?keyword=${filterName}`);
+        setTotal(count.total);
+      } catch (error) {
+        console.error('Load total error:', error);
+      }
+    };
+
+    if (filterName !== prevFilterName) {
+      setPage(0);
+      loadTotal();
+    }
+
     loadUsers();
-  }, []);
+
+    prevFilterNameRef.current = filterName;
+
+  }, [filterName, page, order, orderBy]);
+
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -78,15 +110,10 @@ export default function UserPage() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
   const handleFilterByName = (event) => {
     // setPage(0);
-    setFilterName(event.target.value);
     console.log('handleFilterByName', event.target.value);
+    setFilterName(event.target.value);
   };
 
   const handleClick = async (row) => {
@@ -95,13 +122,6 @@ export default function UserPage() {
     setOpenDialog(true);
   }
 
-  const dataFiltered = applyFilter({
-    inputData: users,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
-
-  const notFound = !dataFiltered.length && !!filterName;
 
   return (
     <Container>
@@ -133,8 +153,7 @@ export default function UserPage() {
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                {users
                   .map((row) => (
                     <UserTableRow
                       key={row._id}
@@ -145,15 +164,10 @@ export default function UserPage() {
                       avatarUrl={row.avatarUrl}
                       public_repos={row.public_repos}
                       handleClick={(event) => handleClick(row)}
+                      searchTerm={filterName}
                     />
                   ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                />
-
-                {notFound && <TableNoData query={filterName} />}
+                {!total && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -162,11 +176,10 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
-          rowsPerPage={rowsPerPage}
+          count={total}
           onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[]}
         />
       </Card>
       {selectedUser && <UserDialog open={openDialog} setOpen={setOpenDialog} user={selectedUser} setSelectedUser={setSelectedUser} />}

@@ -18,7 +18,7 @@ function TextHighlight({ text, searchKeyword }) {
   useEffect(() => {
     if (searchKeyword) {
       const regex = new RegExp(`(${searchKeyword})`, 'gi');
-      const parts = text.split(regex);
+      const parts = text?.split(regex) ?? [];
       const newHighlightedText = parts.map((part, i) =>
         part.toLowerCase() === searchKeyword.toLowerCase() ? (
           <mark key={i}>{part}</mark>

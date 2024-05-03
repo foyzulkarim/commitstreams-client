@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import ListItem from '@mui/material/ListItem';
 import MapIcon from '@mui/icons-material/Map';
+import GitHub from '@mui/icons-material/GitHub';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import EmailIcon from '@mui/icons-material/Email';
@@ -117,6 +118,26 @@ const ProfileCard = ({
             </ListItemText>
           </ListItem>
         )}
+        {
+          followers && (
+            <ListItem disableGutters>
+              <ListItemIcon>
+                <GitHub />
+              </ListItemIcon>
+              <ListItemText primary={`Followers: ${followers}`} />
+            </ListItem>
+          )
+        }
+        {
+          following && (
+            <ListItem disableGutters>
+              <ListItemIcon>
+                <GitHub />
+              </ListItemIcon>
+              <ListItemText primary={`Following: ${following}`} />
+            </ListItem>
+          )
+        }
       </Stack>
     </CardContent>
   </Card>

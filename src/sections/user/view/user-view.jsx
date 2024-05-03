@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
+import { fetchWrapper } from 'src/utils/api';
+
 import Scrollbar from 'src/components/scrollbar';
 
 import UserDialog from './user-dialog';
@@ -24,25 +26,6 @@ export default function UserPage() {
 
   const rowsPerPage = 10;
 
-  const fetchWrapper = async (url) => {
-    try {
-      const response = await fetch(url, {
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error(`Fetch failed: ${error}`);
-      throw error;
-    }
-  };
-
-
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -50,6 +33,7 @@ export default function UserPage() {
   const [orderBy, setOrderBy] = useState('username');
 
   const [filterName, setFilterName] = useState('');
+  const [reload, setReload] = useState(false);
 
   //  users
   const [users, setUsers] = useState([]);
@@ -95,7 +79,7 @@ export default function UserPage() {
 
     prevFilterNameRef.current = filterName;
 
-  }, [filterName, page, order, orderBy]);
+  }, [filterName, page, order, orderBy, reload]);
 
 
   const handleSort = (event, id) => {
@@ -120,6 +104,14 @@ export default function UserPage() {
     console.log('handleClick', row);
     setSelectedUser(row);
     setOpenDialog(true);
+  }
+
+  const closeDialog = (shouldRefetch) => {
+    if (shouldRefetch) {
+      setReload(!reload);
+    }
+    setSelectedUser(null);
+    setOpenDialog(false);
   }
 
 
@@ -182,7 +174,7 @@ export default function UserPage() {
           rowsPerPageOptions={[]}
         />
       </Card>
-      {selectedUser && <UserDialog open={openDialog} setOpen={setOpenDialog} user={selectedUser} setSelectedUser={setSelectedUser} />}
+      {selectedUser && <UserDialog open={openDialog} closeDialog={closeDialog} user={selectedUser} setSelectedUser={setSelectedUser} />}
     </Container>
   );
 }

@@ -1,5 +1,5 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
+import React, { useContext } from 'react';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,16 +8,53 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 
+import { fetchWrapperAxios } from 'src/utils/api';
+
+import { AuthContext } from 'src/contexts/AuthContext';
+
 import ProfileCard from './profile-card';
 
-export default function AlertDialog({ open, setOpen, user, setSelectedUser }) {
-  const handleClose = () => {
-    setSelectedUser(null);
-    setOpen(false);
+
+export default function AlertDialog({ open, closeDialog, user }) {
+
+  // get current user from AuthContext
+  const { userProfile: currentUser } = useContext(AuthContext);
+
+  // each follower will have {id: string, date: string} values in the array
+  const followers = user.csFollowers ?? [];
+
+  const handleClose = (shouldRefetch) => {
+    closeDialog(shouldRefetch);
   };
 
-  return (
+  const handleFollow = async () => {
+    console.log('Follow', user.username);
+    const apiUrl = import.meta.env.VITE_API_URL;
+    // api call to follow user: /v1/users/:username/follow
+    try {
+      const response = await fetchWrapperAxios(`${apiUrl}/v1/users/${user._id}/follow`);
+      console.log('Follow response:', response);
+      handleClose(true);
+    } catch (error) {
+      console.log('follow error', error);
+      handleClose();
+    }
+  }
 
+  // isDisable will be true if the user is the current user or the user is a demo user or if teh  current user is already in the followers list
+  const isAlreadyFollowing = followers.some(follower => follower.id === currentUser._id);
+  const isDisable = user._id === currentUser._id || user.isDemo || isAlreadyFollowing;
+
+  let message = '';
+  if (isAlreadyFollowing) {
+    message = 'You are already following this user';
+  } else if (user.isDemo) {
+    message = 'Demo user';
+  } else if (user._id === currentUser._id) {
+    message = 'You are the current user';
+  }
+
+  return (
     <Dialog
       open={open}
       onClose={handleClose}
@@ -25,7 +62,7 @@ export default function AlertDialog({ open, setOpen, user, setSelectedUser }) {
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title">
-        {user.username}
+        {user.username} {user.isDemo ? '(Demo)' : ''}
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
@@ -33,7 +70,8 @@ export default function AlertDialog({ open, setOpen, user, setSelectedUser }) {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button disabled onClick={handleClose}>Follow</Button>
+        {message}
+        <Button disabled={isDisable} onClick={handleFollow}>Follow</Button>
       </DialogActions>
     </Dialog>
   );
@@ -41,7 +79,6 @@ export default function AlertDialog({ open, setOpen, user, setSelectedUser }) {
 
 AlertDialog.propTypes = {
   open: PropTypes.bool,
-  setOpen: PropTypes.func,
+  closeDialog: PropTypes.func,
   user: PropTypes.object,
-  setSelectedUser: PropTypes.func,
 }

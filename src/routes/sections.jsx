@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import PropTypes from 'prop-types';
-import { lazy, Suspense, useEffect, useContext } from 'react';
-import { Outlet, Navigate, useRoutes, useNavigate } from 'react-router-dom';
+import { lazy, Suspense, useContext } from 'react';
+import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
 import { AuthContext } from 'src/contexts/AuthContext';
@@ -18,16 +18,13 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 // ----------------------------------------------------------------------
 
 const ProtectedComponent = ({ children }) => {
-  const navigate = useNavigate();
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, clearAuthState } = useContext(AuthContext);
   console.log('ProtectedComponent children:', { children, isAuthenticated });
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      console.log('ProtectedComponent: not authenticated')
-      navigate('/login', { replace: true })
-    };
-  });
+  if (!isAuthenticated) {
+    console.log('ProtectedComponent: not authenticated')
+    clearAuthState();
+  };
 
   return children;
 };

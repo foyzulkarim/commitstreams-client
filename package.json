@@ -31,6 +31,7 @@
     "@mui/material": "^5.14.12",
     "@vercel/analytics": "^1.2.2",
     "apexcharts": "^3.43.0",
+    "axios": "^1.6.8",
     "date-fns": "^2.30.0",
     "history": "^5.3.0",
     "lodash": "^4.17.21",
@@ -76,5 +77,8 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "volta": {
+    "node": "20.12.2"
   }
 }

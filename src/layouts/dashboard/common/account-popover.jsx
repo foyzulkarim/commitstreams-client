@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -34,10 +33,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const navigate = useNavigate();
-  const { clearAuthState } = useContext(AuthContext);
-
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const { logout, userProfile } = useContext(AuthContext);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -50,22 +46,16 @@ export default function AccountPopover() {
   const handleLogout = async () => {
     console.log('logout');
     try {
-      const response = await fetch(`${apiUrl}/logout`, {
-        method: 'POST', // Or appropriate method for your endpoint
-        credentials: 'include',
-      });
-
-      const res = await response.json();
-      console.log('logout response:', res);
-
-      // Clear any additional user data
-      clearAuthState();
-      navigate('/login', { replace: true })
+      await logout();
     } catch (error) {
       console.error('Logout error:', error);
     }
     setOpen(null);
   }
+
+  console.log('account:', { userProfile });
+  const name = userProfile?.displayName || (userProfile?.username || account.displayName);
+  const email = userProfile?.email || '';
 
   return (
     <>
@@ -82,15 +72,15 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          src={userProfile?.avatarUrl ?? account.photoURL}
+          alt={name}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {name}
         </Avatar>
       </IconButton>
 
@@ -111,10 +101,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {email}
           </Typography>
         </Box>
 

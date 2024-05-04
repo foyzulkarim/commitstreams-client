@@ -7,10 +7,9 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 
 // ----------------------------------------------------------------------
 
-export default function RepositoryToolbar({ onButtonClick,
-  username, onFilterUsername, repository, onFilterRepository
+export default function RepositoryToolbar(
+  { onFetchFromGitHubButtonClick, onSearchButtonClick, username, onFilterUsername, repository, onFilterRepository, searchDisabled, fetchDisabled }) {
 
-}) {
   return (
 
     <Toolbar
@@ -32,17 +31,25 @@ export default function RepositoryToolbar({ onButtonClick,
           placeholder="Repository"
         />
       </Stack>
-      <Button variant="contained" color="primary" onClick={onButtonClick}>
-        Fetch from GitHub
-      </Button>
+      <Stack direction="row" justifyItems="flex-end" spacing={1}>
+        <Button variant="contained" color="primary" disabled={searchDisabled} onClick={onSearchButtonClick}>
+          Search
+        </Button>
+        <Button variant="contained" color="primary" disabled={fetchDisabled} onClick={onFetchFromGitHubButtonClick}>
+          Fetch from GitHub
+        </Button>
+      </Stack>
     </Toolbar>
   );
 }
 
 RepositoryToolbar.propTypes = {
-  onButtonClick: PropTypes.func,
+  onFetchFromGitHubButtonClick: PropTypes.func,
+  onSearchButtonClick: PropTypes.func,
   username: PropTypes.string,
   onFilterUsername: PropTypes.func,
   repository: PropTypes.string,
-  onFilterRepository: PropTypes.func
+  onFilterRepository: PropTypes.func,
+  searchDisabled: PropTypes.bool,
+  fetchDisabled: PropTypes.bool,
 };

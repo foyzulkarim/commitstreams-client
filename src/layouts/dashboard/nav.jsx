@@ -8,8 +8,8 @@ import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import ListItemButton from '@mui/material/ListItemButton';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import ListItemButton from '@mui/material/ListItemButton';
 
 import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
@@ -34,13 +34,6 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const { userProfile } = useContext(AuthContext);
 
-
-  // useEffect(() => {
-  //   console.log('AuthContext userProfile:', userProfile);
-  //   if (userProfile === null) {
-  //     clearAuthState();
-  //   }
-  // }, [clearAuthState, userProfile]);
 
   useEffect(() => {
     if (openNav) {

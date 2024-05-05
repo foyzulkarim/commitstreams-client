@@ -12,9 +12,9 @@ const icon = (name) => (
 
 const navConfig = [
   {
-    title: 'dashboard',
+    title: 'feed',
     path: '/',
-    icon: icon('ic_analytics'),
+    icon: <RssFeedOutlinedIcon />,
   },
   {
     title: 'Users',
@@ -32,25 +32,10 @@ const navConfig = [
     icon: <SourceOutlinedIcon />,
   },
   {
-    title: 'feed',
-    path: '/feed',
-    icon: <RssFeedOutlinedIcon />,
-  },
-  // {
-  //   title: 'blog',
-  //   path: '/blog',
-  //   icon: icon('ic_blog'),
-  // },
-  // {
-  //   title: 'login',
-  //   path: '/login',
-  //   icon: icon('ic_lock'),
-  // },
-  // {
-  //   title: 'Not found',
-  //   path: '/404',
-  //   icon: icon('ic_disabled'),
-  // },
+    title: 'analytics',
+    path: '/analytics',
+    icon: icon('ic_analytics'),
+  }
 ];
 
 export default navConfig;

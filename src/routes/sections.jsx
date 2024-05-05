@@ -19,12 +19,12 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 // ----------------------------------------------------------------------
 
 const ProtectedComponent = ({ children }) => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
+  const { isAuthenticated, } = useContext(AuthContext);
   console.log('ProtectedComponent children:', { children, isAuthenticated });
 
   if (!isAuthenticated) {
     console.log('ProtectedComponent: not authenticated')
-    logout();
+    // logout();
   };
 
   return children;
@@ -50,8 +50,8 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'add-repository', element: <AddRepositoryView /> },
         { path: 'repositories', element: <RepositoriesView /> },
-        { path: 'feed', element: <FeedPage /> },
-        { element: <IndexPage />, index: true },
+        { path: 'analytics', element: <IndexPage /> },
+        { element: <FeedPage />, index: true },
       ],
     },
     {

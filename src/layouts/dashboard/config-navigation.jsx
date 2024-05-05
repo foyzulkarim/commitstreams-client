@@ -1,3 +1,5 @@
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
 import RssFeedOutlinedIcon from '@mui/icons-material/RssFeedOutlined';
 
 import SvgColor from 'src/components/svg-color';
@@ -10,40 +12,30 @@ const icon = (name) => (
 
 const navConfig = [
   {
-    title: 'dashboard',
+    title: 'feed',
     path: '/',
-    icon: icon('ic_analytics'),
+    icon: <RssFeedOutlinedIcon />,
   },
   {
-    title: 'user',
+    title: 'Users',
     path: '/user',
     icon: icon('ic_user'),
   },
   {
-    title: 'product',
-    path: '/products',
-    icon: icon('ic_cart'),
+    title: 'Add repository',
+    path: '/add-repository',
+    icon: <CodeOutlinedIcon />,
   },
   {
-    title: 'feed',
-    path: '/feed',
-    icon: <RssFeedOutlinedIcon />,
+    title: 'Repositories',
+    path: '/repositories',
+    icon: <SourceOutlinedIcon />,
   },
   {
-    title: 'blog',
-    path: '/blog',
-    icon: icon('ic_blog'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic_disabled'),
-  },
+    title: 'analytics',
+    path: '/analytics',
+    icon: icon('ic_analytics'),
+  }
 ];
 
 export default navConfig;

@@ -11,7 +11,8 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const LoginSuccess = lazy(() => import('src/pages/login-success'));
-export const ProductsPage = lazy(() => import('src/pages/products'));
+export const AddRepositoryView = lazy(() => import('src/pages/add-repository'));
+export const RepositoriesView = lazy(() => import('src/pages/repositories'));
 export const FeedPage = lazy(() => import('src/pages/feed'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
@@ -46,11 +47,11 @@ export default function Router() {
         </ProtectedComponent>
       ),
       children: [
-        { element: <IndexPage />, index: true },
         { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
-        { path: 'feed', element: <FeedPage /> },
+        { path: 'add-repository', element: <AddRepositoryView /> },
+        { path: 'repositories', element: <RepositoriesView /> },
+        { path: 'analytics', element: <IndexPage /> },
+        { element: <FeedPage />, index: true },
       ],
     },
     {

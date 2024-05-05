@@ -36,14 +36,14 @@ export default function RepositoryPage() {
   const [orderBy, setOrderBy] = useState('full_name');
 
   const [filterName, setFilterName] = useState('');
-  const [reload, setReload] = useState(false);
+  // const [reload, setReload] = useState(false);
 
   //  repositories
   const [repositories, setRepositories] = useState([]);
-  const [selectedRepository, setSelectedRepository] = useState(null);
+  // const [selectedRepository, setSelectedRepository] = useState(null);
   const [total, setTotal] = useState(0);
 
-  const [openDialog, setOpenDialog] = useState(false);
+  // const [openDialog, setOpenDialog] = useState(false);
 
   const prevFilterNameRef = useRef();
 
@@ -87,7 +87,7 @@ export default function RepositoryPage() {
 
     prevFilterNameRef.current = filterName;
 
-  }, [filterName, page, order, orderBy, reload, userProfile._id]);
+  }, [filterName, page, order, orderBy, userProfile._id]); // add reload
 
 
   const handleSort = (event, id) => {
@@ -110,17 +110,17 @@ export default function RepositoryPage() {
 
   const handleClick = async (row) => {
     console.log('handleClick', row);
-    setSelectedRepository(row);
-    setOpenDialog(true);
+    // setSelectedRepository(row);
+    // setOpenDialog(true);
   }
 
-  const closeDialog = (shouldRefetch) => {
-    if (shouldRefetch) {
-      setReload(!reload);
-    }
-    setSelectedRepository(null);
-    setOpenDialog(false);
-  }
+  // const closeDialog = (shouldRefetch) => {
+  //   if (shouldRefetch) {
+  //     setReload(!reload);
+  //   }
+  //   setSelectedRepository(null);
+  //   setOpenDialog(false);
+  // }
 
 
   return (

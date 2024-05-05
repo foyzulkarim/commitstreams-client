@@ -9,6 +9,7 @@ import Avatar from '@mui/material/Avatar';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import ListItemButton from '@mui/material/ListItemButton';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
@@ -18,7 +19,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { account } from 'src/_mock/account';
 import { AuthContext } from 'src/contexts/AuthContext';
 
-import Logo from 'src/components/logo';
+// import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
 import { NAV } from './config-layout';
@@ -84,28 +85,17 @@ export default function Nav({ openNav, onCloseNav }) {
   const renderUpgrade = (
     <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
       <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
-        <Box
-          component="img"
-          src="/assets/illustrations/illustration_avatar.png"
-          sx={{ width: 100, position: 'absolute', top: -50 }}
-        />
-
+        <GitHubIcon sx={{ width: 100, position: 'absolute' }} />
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6">Get more?</Typography>
+          <Typography variant="h6">View the source code on GitHub</Typography>
 
-          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-            From only $69
-          </Typography>
+          <Button variant="body2" target="_blank" href='https://github.com/foyzulkarim/commitstreams-server'>
+            Server
+          </Button>
+          <Button variant="body2" target="_blank" href='https://github.com/foyzulkarim/commitstreams-client'>
+            Client
+          </Button>
         </Box>
-
-        <Button
-          href="https://material-ui.com/store/items/minimal-dashboard/"
-          target="_blank"
-          variant="contained"
-          color="inherit"
-        >
-          Upgrade to Pro
-        </Button>
       </Stack>
     </Box>
   );
@@ -121,7 +111,7 @@ export default function Nav({ openNav, onCloseNav }) {
         },
       }}
     >
-      <Logo sx={{ mt: 3, ml: 4 }} />
+      {/* <Logo sx={{ mt: 3, ml: 4 }} /> */}
 
       {renderAccount}
 

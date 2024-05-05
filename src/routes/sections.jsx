@@ -19,12 +19,12 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 // ----------------------------------------------------------------------
 
 const ProtectedComponent = ({ children }) => {
-  const { isAuthenticated, } = useContext(AuthContext);
+  const { isAuthenticated, clearAuthState } = useContext(AuthContext);
   console.log('ProtectedComponent children:', { children, isAuthenticated });
 
   if (!isAuthenticated) {
     console.log('ProtectedComponent: not authenticated')
-    // logout();
+    clearAuthState();
   };
 
   return children;

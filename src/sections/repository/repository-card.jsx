@@ -162,6 +162,7 @@ RepositoryCard.propTypes = {
   html_url: PropTypes.string,
   watchers_count: PropTypes.number,
   languageData: PropTypes.object,
+  isFollowing: PropTypes.bool,
 };
 
 export default RepositoryCard;

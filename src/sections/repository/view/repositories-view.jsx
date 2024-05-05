@@ -57,7 +57,7 @@ export default function RepositoryPage() {
         // Load repositories from the backend using fetch
         const data = await fetchWrapperAxios(`/v1/repositories/search?keyword=${filterName}&page=${page}&orderBy=${orderBy}&order=${order}`);
         const processedData = data.map(repo => {
-          const isFollowing = repo.csFollowers?.some(follower => follower.id === userProfile._id)
+          const isFollowing = repo.csFollowers?.some(follower => follower._id === userProfile._id)
           repo.isFollowing = isFollowing;
           return repo;
         });
@@ -150,7 +150,7 @@ export default function RepositoryPage() {
                   { id: 'created_at', label: 'Created' },
                   { id: 'forks_count', label: 'Forks' },
                   { id: 'stargazers_count', label: 'Stars' },
-                  { id: 'isFollowing', label: 'Following' },
+                  { id: 'isFollowing', label: 'Following', disableSort: true },
                 ]}
               />
               <TableBody>

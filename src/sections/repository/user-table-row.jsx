@@ -3,10 +3,13 @@ import { useState, useEffect } from 'react';
 import { format, formatDistanceToNow } from 'date-fns'
 
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
+
+import { fetchWrapperAxios } from 'src/utils/api';
 
 import Label from 'src/components/label';
 
@@ -51,6 +54,7 @@ TextHighlight.propTypes = {
 export default function UserTableRow({
   handleClick,
   searchTerm,
+  _id,
   full_name,
   language,
   created_at,
@@ -60,9 +64,25 @@ export default function UserTableRow({
   isFollowing,
   avatarUrl,
 }) {
+
+  const [following, setFollowing] = useState(isFollowing);
+
+  const followRepository = async () => {
+    try {
+      const response = await fetchWrapperAxios(`/v1/repositories/${_id}/follow`);
+      console.log(response); // repository followed   
+      if (response.result) {
+        // Update the state to reflect the change
+        setFollowing(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
-    <TableRow hover tabIndex={-1} role="checkbox" onClick={handleClick}>
-      <TableCell component="th" scope="row" >
+    <TableRow hover tabIndex={-1} role="checkbox">
+      <TableCell component="th" scope="row" onClick={handleClick}>
         <Stack direction="row" alignItems="center" spacing={2}>
           <Avatar alt={full_name} src={avatarUrl} />
           <TextHighlight
@@ -87,9 +107,17 @@ export default function UserTableRow({
         <Label>{stargazers_count}</Label>
       </TableCell>
       <TableCell>
-        <Label color={isFollowing ? 'success' : 'error'}>
-          {isFollowing ? 'Following' : 'Not following'}
-        </Label>
+        {
+          following ? (
+            <Label color='success'>
+              Following
+            </Label>
+          ) : (
+            <Button color='primary' onClick={followRepository}>
+              Follow
+            </Button>
+          )
+        }
       </TableCell>
     </TableRow>
   );
@@ -98,6 +126,7 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   handleClick: PropTypes.func,
   searchTerm: PropTypes.string,
+  _id: PropTypes.string,
   full_name: PropTypes.string,
   language: PropTypes.string,
   created_at: PropTypes.string,

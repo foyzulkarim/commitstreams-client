@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 
 import { fetchWrapperAxios } from 'src/utils/api';
+
+import { AuthContext } from 'src/contexts/AuthContext';
 
 import RepositoryCard from '../repository-card';
 import RepositoryToolbar from '../repository-toolbar';
@@ -22,7 +24,7 @@ function NoDataCard({ searchTerm, setShowNoData }) {
     const timeoutId = setTimeout(() => {
       setIsVisible(false);
       setShowNoData(false);
-    }, 3000); // Hide after 3 seconds
+    }, 5000); // Hide after 5 seconds
 
     return () => clearTimeout(timeoutId);
   }, [setShowNoData]);
@@ -45,7 +47,10 @@ NoDataCard.propTypes = {
   setShowNoData: PropTypes.func,
 }
 
-export default function ProductsView() {
+export default function AddRepositoryView() {
+
+  const { userProfile } = useContext(AuthContext);
+
 
   // const [repositories, setRepositories] = useState([]);
   const [githubRepository, setGithubRepository] = useState(null);
@@ -86,7 +91,7 @@ export default function ProductsView() {
 
   const onSearchButtonClick = async () => {
     try {
-      const response = await fetchWrapperAxios('/v1/repositories/search', {
+      const response = await fetchWrapperAxios('/v1/repositories/search-one', {
         method: 'POST',
         data: {
           username,
@@ -100,6 +105,8 @@ export default function ProductsView() {
         setFetchDisabled(false);
         setShowNoData(true);
       } else {
+        const isFollowing = response.csFollowers?.some(follower => follower.id === userProfile._id);
+        response.isFollowing = isFollowing;
         setFetchDisabled(true);
       }
       setGithubRepository(response);

@@ -26,7 +26,6 @@ const AuthProvider = ({ children }) => {
         } else {
           const data = await response.json();
           setAuthState(data);
-          navigate('/login');
         }
       } catch (error) {
         clearAuthState();

@@ -1,3 +1,5 @@
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
 import RssFeedOutlinedIcon from '@mui/icons-material/RssFeedOutlined';
 
 import SvgColor from 'src/components/svg-color';
@@ -15,40 +17,40 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'user',
+    title: 'Users',
     path: '/user',
     icon: icon('ic_user'),
   },
   {
-    title: 'repository',
-    path: '/repository',
-    icon: icon('ic_cart'),
+    title: 'Add repository',
+    path: '/add-repository',
+    icon: <CodeOutlinedIcon />,
   },
   {
-    title: 'product',
-    path: '/products',
-    icon: icon('ic_cart'),
+    title: 'Repositories',
+    path: '/repositories',
+    icon: <SourceOutlinedIcon />,
   },
   {
     title: 'feed',
     path: '/feed',
     icon: <RssFeedOutlinedIcon />,
   },
-  {
-    title: 'blog',
-    path: '/blog',
-    icon: icon('ic_blog'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic_disabled'),
-  },
+  // {
+  //   title: 'blog',
+  //   path: '/blog',
+  //   icon: icon('ic_blog'),
+  // },
+  // {
+  //   title: 'login',
+  //   path: '/login',
+  //   icon: icon('ic_lock'),
+  // },
+  // {
+  //   title: 'Not found',
+  //   path: '/404',
+  //   icon: icon('ic_disabled'),
+  // },
 ];
 
 export default navConfig;

@@ -1,1 +1,3 @@
-export { default as RepositoryView } from './repository-view';
+import AddRepositoryView from './add-repository-view';
+
+export { AddRepositoryView };

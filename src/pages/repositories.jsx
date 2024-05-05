@@ -1,16 +1,15 @@
 import { Helmet } from 'react-helmet-async';
 
-import { RepositoryView } from 'src/sections/repository/view';
+import Repositories from 'src/sections/repository/view/repositories-view';
 
 export default function RepositoryPage() {
   return (
     <>
       <Helmet>
-        <title> Repositories </title>
+        <title> Following </title>
       </Helmet>
 
-      <h1>Repositories</h1>
-      <RepositoryView />
+      <Repositories />
     </>
   );
 }

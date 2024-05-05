@@ -18,8 +18,10 @@ import CardContent from '@mui/material/CardContent';
 import ForkRightIcon from '@mui/icons-material/ForkRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
+import { fetchWrapperAxios } from 'src/utils/api';
 
 const RepositoryCard = ({
+  _id,
   full_name = '',
   description = '',
   owner = {},
@@ -34,10 +36,20 @@ const RepositoryCard = ({
   language = '',
   html_url = '',
   languageData = {},
+  isFollowing,
 }) => {
   const timeSinceCreation = formatDistanceToNow(new Date(created_at), { addSuffix: true });
   const formattedUpdatedAt = format(new Date(updated_at), 'MMM dd, yyyy');
   const totalLinesOfCode = Object.values(languageData).reduce((a, b) => a + b, 0);
+
+  const followRepository = async () => {
+    try {
+      const response = await fetchWrapperAxios(`/v1/repositories/${_id}/follow`);
+      console.log(response); // repository followed      
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
 
   return (
@@ -124,13 +136,14 @@ const RepositoryCard = ({
         </Stack>
       </CardContent>
       <CardActions disableSpacing>
-        <Button variant="contained">Follow</Button>
+        <Button disabled={isFollowing} variant="contained" onClick={followRepository}>Follow</Button>
       </CardActions>
     </Card>
   );
 };
 
 RepositoryCard.propTypes = {
+  _id: PropTypes.number.isRequired,
   full_name: PropTypes.string,
   description: PropTypes.string,
   owner: PropTypes.shape({

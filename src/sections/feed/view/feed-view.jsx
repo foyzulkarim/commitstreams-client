@@ -1,26 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import CloudSyncIcon from '@mui/icons-material/CloudSync';
 
-import { repositories } from 'src/_mock/repositories';
+import { fetchWrapperAxios } from 'src/utils/api';
 
-import ProductSort from '../sort';
 import FeedCards from '../feed-cards';
-import ProductFilters from '../filters';
 
 // ----------------------------------------------------------------------
 
-export default function ProductsView() {
-  const [openFilter, setOpenFilter] = useState(false);
+export default function FeedView() {
+  const [pulls, setPulls] = useState([]);
+  const [reload, setReload] = useState(false);
 
-  const handleOpenFilter = () => {
-    setOpenFilter(true);
-  };
+  useEffect(() => {
+    const loadPullRequests = async () => {
+      try {
+        // Load repositories from the backend using fetch
+        const data = await fetchWrapperAxios(`/v1/pulls/search`);
+        setPulls(data);
+        console.log('Load pull requests:', data);
+      } catch (error) {
+        console.error('Load pull reqeusts error:', error);
+      }
+    };
 
-  const handleCloseFilter = () => {
-    setOpenFilter(false);
-  };
+    loadPullRequests();
+  }, [reload]);
+
+  const syncWithGitHubHandler = async () => {
+    try {
+      const data = await fetchWrapperAxios(`/v1/pulls/fetch-updates`);
+      setReload(!reload);
+      console.log('Sync with GitHub:', data);
+    } catch (error) {
+      console.error('Sync with GitHub error:', error);
+    }
+  }
 
   return (
     <Container>
@@ -29,22 +47,16 @@ export default function ProductsView() {
         direction="row"
         alignItems="center"
         flexWrap="wrap-reverse"
-        justifyContent="flex-end"
+        justifyContent="space-between"
         sx={{ mb: 5 }}
       >
-        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
-            openFilter={openFilter}
-            onOpenFilter={handleOpenFilter}
-            onCloseFilter={handleCloseFilter}
-          />
-
-          <ProductSort />
+        <Stack direction="row" justifyContent="flex-start">
+          <Button variant='contained' startIcon={<CloudSyncIcon />} onClick={syncWithGitHubHandler}>Sync with GitHub</Button>
         </Stack>
       </Stack>
 
       <Stack>
-        <FeedCards items={repositories} />
+        <FeedCards items={pulls} />
       </Stack>
     </Container>
   );

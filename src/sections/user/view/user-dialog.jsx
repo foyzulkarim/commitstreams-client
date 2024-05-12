@@ -32,13 +32,8 @@ export default function AlertDialog({ open, closeDialog, user }) {
   const handleFollow = async () => {
     // api call to follow user: /v1/users/:username/follow
     try {
-      const response = await fetchWrapperAxios(`/v1/users/${user._id}/follow`);
-      if (!response.ok) {
-        showAlert('Follow user error', 'error');
-      }
-      else {
-        showAlert('User followed', 'success');
-      }
+      await fetchWrapperAxios(`/v1/users/${user._id}/follow`);
+      showAlert('User followed', 'success');
       handleClose(true);
     } catch (error) {
       showAlert('Follow user error', 'error');
@@ -47,7 +42,7 @@ export default function AlertDialog({ open, closeDialog, user }) {
   }
 
   // isDisable will be true if the user is the current user or the user is a demo user or if teh  current user is already in the followers list
-  const isAlreadyFollowing = followers.some(follower => follower.id === currentUser._id);
+  const isAlreadyFollowing = followers.some(follower => follower._id === currentUser._id);
   const isDisable = user._id === currentUser._id || user.isDemo || isAlreadyFollowing;
 
   let message = '';

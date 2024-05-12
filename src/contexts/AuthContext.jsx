@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, createContext } from 'react';
 
+import { useAlert } from './AlertContext';
+
 const AuthContext = createContext({
   isAuthenticated: false,
   userProfile: null,
@@ -13,6 +15,7 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
 
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -29,10 +32,22 @@ const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         clearAuthState();
-        navigate('/login', { replace: true });
+        navigate('/login');
       }
     };
-    console.log('fetchUserProfile:');
+
+    const url = new URL(window.location.href);
+    if (url.pathname === '/login') {
+      const error = url.searchParams.get('error');
+      if (error) {
+        if (error === 'user-is-deactivated') {
+          showAlert(`Login failed. User is deactivated.`, 'error');
+        }
+        else { showAlert(`Login failed.`, 'error'); }
+      }
+      return;
+    }
+
     fetchUserProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -44,7 +59,6 @@ const AuthProvider = ({ children }) => {
   };
 
   const clearAuthState = () => {
-    console.log('clearAuthState');
     setIsAuthenticated(false);
     setUserProfile(null);
   };

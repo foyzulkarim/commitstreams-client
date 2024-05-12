@@ -20,6 +20,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import { fetchWrapperAxios } from 'src/utils/api';
 
+import { useAlert } from 'src/contexts/AlertContext';
+
 const RepositoryCard = ({
   _id,
   full_name = '',
@@ -38,16 +40,18 @@ const RepositoryCard = ({
   languageData = {},
   isFollowing,
 }) => {
+  const { showAlert } = useAlert();
+
   const timeSinceCreation = formatDistanceToNow(new Date(created_at), { addSuffix: true });
   const formattedUpdatedAt = format(new Date(updated_at), 'MMM dd, yyyy');
   const totalLinesOfCode = Object.values(languageData).reduce((a, b) => a + b, 0);
 
   const followRepository = async () => {
     try {
-      const response = await fetchWrapperAxios(`/v1/repositories/${_id}/follow`);
-      console.log(response); // repository followed      
+      await fetchWrapperAxios(`/v1/repositories/${_id}/follow`);
+      showAlert('Repository followed', 'success');
     } catch (error) {
-      console.error(error);
+      showAlert('Repository follow error', 'error');
     }
   }
 

@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 
 import { fetchWrapperAxios } from 'src/utils/api';
 
+import { useAlert } from 'src/contexts/AlertContext';
+
 import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
@@ -66,17 +68,17 @@ export default function UserTableRow({
 }) {
 
   const [following, setFollowing] = useState(isFollowing);
+  const { showAlert } = useAlert();
 
   const followRepository = async () => {
     try {
       const response = await fetchWrapperAxios(`/v1/repositories/${_id}/follow`);
-      console.log(response); // repository followed   
       if (response.result) {
         // Update the state to reflect the change
         setFollowing(true);
       }
     } catch (error) {
-      console.error(error);
+      showAlert('Repository follow error', 'error');
     }
   }
 

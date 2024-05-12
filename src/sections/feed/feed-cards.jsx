@@ -8,7 +8,7 @@ import PullRequestCard from './pull-request-card';
 const FeedCards = ({ items }) => (
   <Stack spacing={2}>
     {items.map((item) => (
-      <PullRequestCard {...item} />
+      <PullRequestCard key={item._id} {...item} />
     ))}
   </Stack>
 );

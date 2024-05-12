@@ -14,7 +14,6 @@ export default function LoginPage() {
   const { isAuthenticated } = useContext(AuthContext);
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('ProtectedComponent: authenticated');
       navigate('/')
     };
   });

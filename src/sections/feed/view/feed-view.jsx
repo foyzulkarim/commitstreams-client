@@ -7,6 +7,8 @@ import CloudSyncIcon from '@mui/icons-material/CloudSync';
 
 import { fetchWrapperAxios } from 'src/utils/api';
 
+import { useAlert } from 'src/contexts/AlertContext';
+
 import FeedCards from '../feed-cards';
 
 // ----------------------------------------------------------------------
@@ -14,29 +16,30 @@ import FeedCards from '../feed-cards';
 export default function FeedView() {
   const [pulls, setPulls] = useState([]);
   const [reload, setReload] = useState(false);
+  const { showAlert } = useAlert();
+
+  const loadPullRequests = async () => {
+    try {
+      const data = await fetchWrapperAxios(`/v1/pulls/search`);
+      setPulls(data);
+      showAlert('Pull requests loaded', 'success');
+    } catch (error) {
+      showAlert('Pull requests error', 'error');
+    }
+  };
 
   useEffect(() => {
-    const loadPullRequests = async () => {
-      try {
-        // Load repositories from the backend using fetch
-        const data = await fetchWrapperAxios(`/v1/pulls/search`);
-        setPulls(data);
-        console.log('Load pull requests:', data);
-      } catch (error) {
-        console.error('Load pull reqeusts error:', error);
-      }
-    };
-
     loadPullRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reload]);
 
   const syncWithGitHubHandler = async () => {
     try {
-      const data = await fetchWrapperAxios(`/v1/pulls/fetch-updates`);
+      await fetchWrapperAxios(`/v1/pulls/fetch-updates`);
       setReload(!reload);
-      console.log('Sync with GitHub:', data);
+      showAlert('Sync with GitHub successful', 'success');
     } catch (error) {
-      console.error('Sync with GitHub error:', error);
+      showAlert('Sync with GitHub error', 'error');
     }
   }
 

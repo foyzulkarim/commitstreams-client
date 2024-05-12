@@ -30,10 +30,9 @@ export default function AlertDialog({ open, closeDialog, user }) {
   };
 
   const handleFollow = async () => {
-    const apiUrl = import.meta.env.VITE_API_URL;
     // api call to follow user: /v1/users/:username/follow
     try {
-      const response = await fetchWrapperAxios(`${apiUrl}/v1/users/${user._id}/follow`);
+      const response = await fetchWrapperAxios(`/v1/users/${user._id}/follow`);
       if (!response.ok) {
         showAlert('Follow user error', 'error');
       }

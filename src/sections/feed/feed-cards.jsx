@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 
-import RepositoryCard from './repository-card';
+import PullRequestCard from './pull-request-card';
 
 const FeedCards = ({ items }) => (
   <Stack spacing={2}>
     {items.map((item) => (
-      <RepositoryCard {...item} />
+      <PullRequestCard key={item._id} {...item} />
     ))}
   </Stack>
 );

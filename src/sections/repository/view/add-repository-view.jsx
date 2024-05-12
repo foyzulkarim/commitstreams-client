@@ -9,6 +9,7 @@ import CardContent from '@mui/material/CardContent';
 
 import { fetchWrapperAxios } from 'src/utils/api';
 
+import { useAlert } from 'src/contexts/AlertContext';
 import { AuthContext } from 'src/contexts/AuthContext';
 
 import RepositoryCard from '../repository-card';
@@ -50,6 +51,7 @@ NoDataCard.propTypes = {
 export default function AddRepositoryView() {
 
   const { userProfile } = useContext(AuthContext);
+  const { showAlert } = useAlert();
 
 
   // const [repositories, setRepositories] = useState([]);
@@ -63,13 +65,13 @@ export default function AddRepositoryView() {
   // username 
   const [username, setUsername] = useState('');
   const onFilterUsername = (event) => {
-    setUsername(event.target.value.trim());
+    setUsername(event.target.value.trim() || '');
   };
 
   // repository
   const [repository, setRepository] = useState('');
   const onFilterRepository = (event) => {
-    setRepository(event.target.value.trim());
+    setRepository(event.target.value.trim() || '');
   };
 
   const onFetchFromGitHubButtonClick = async () => {
@@ -81,11 +83,10 @@ export default function AddRepositoryView() {
           repository,
         },
       });
-      console.log(response); // repository
       setGithubRepository(response);
       setFetchDisabled(true);
     } catch (error) {
-      console.error(error);
+      showAlert('Fetch from GitHub error', 'error');
     }
   };
 
@@ -98,7 +99,6 @@ export default function AddRepositoryView() {
           repository,
         },
       });
-      console.log(response); // repository
 
       // if response is empty (length is 0), enable the fetch button
       if (!response) {
@@ -111,7 +111,7 @@ export default function AddRepositoryView() {
       }
       setGithubRepository(response);
     } catch (error) {
-      console.error(error);
+      showAlert('Search repository error', 'error');
       setFetchDisabled(true);
     }
   };

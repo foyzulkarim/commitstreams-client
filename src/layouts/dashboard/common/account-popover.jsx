@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import { account } from 'src/_mock/account';
+import { useAlert } from 'src/contexts/AlertContext';
 import { AuthContext } from 'src/contexts/AuthContext';
 
 // ----------------------------------------------------------------------
@@ -35,6 +36,8 @@ export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const { logout, userProfile } = useContext(AuthContext);
 
+  const { showAlert } = useAlert();
+
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
@@ -44,16 +47,14 @@ export default function AccountPopover() {
   };
 
   const handleLogout = async () => {
-    console.log('logout');
     try {
       await logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      showAlert('Logout error', 'error');
     }
     setOpen(null);
   }
 
-  console.log('account:', { userProfile });
   const name = userProfile?.displayName || (userProfile?.username || account.displayName);
   const email = userProfile?.email || '';
 

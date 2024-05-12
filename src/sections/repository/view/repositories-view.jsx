@@ -11,6 +11,7 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { fetchWrapperAxios } from 'src/utils/api';
 
+import { useAlert } from 'src/contexts/AlertContext';
 import { AuthContext } from 'src/contexts/AuthContext';
 
 import Scrollbar from 'src/components/scrollbar';
@@ -26,6 +27,7 @@ import RepositoryTableToolbar from '../user-table-toolbar';
 export default function RepositoryPage() {
 
   const { userProfile } = useContext(AuthContext);
+  const { showAlert } = useAlert();
 
   const rowsPerPage = 10;
 
@@ -49,9 +51,6 @@ export default function RepositoryPage() {
 
   useEffect(() => {
     const prevFilterName = prevFilterNameRef.current;
-
-    console.log('page', page);
-
     const loadRepositorys = async () => {
       try {
         // Load repositories from the backend using fetch
@@ -61,10 +60,9 @@ export default function RepositoryPage() {
           repo.isFollowing = isFollowing;
           return repo;
         });
-        console.log('loadRepositorys', processedData);
         setRepositories(processedData);
       } catch (error) {
-        console.error('Load repositories error:', error);
+        showAlert('Load repositories error', 'error');
       }
     };
 
@@ -74,7 +72,7 @@ export default function RepositoryPage() {
         const count = await fetchWrapperAxios(`/v1/repositories/count?keyword=${filterName}`);
         setTotal(count.total);
       } catch (error) {
-        console.error('Load total error:', error);
+        showAlert('Load total error', 'error');
       }
     };
 
@@ -87,7 +85,7 @@ export default function RepositoryPage() {
 
     prevFilterNameRef.current = filterName;
 
-  }, [filterName, page, order, orderBy, userProfile._id]); // add reload
+  }, [filterName, page, order, orderBy, userProfile._id, showAlert]); // add reload
 
 
   const handleSort = (event, id) => {
@@ -103,24 +101,8 @@ export default function RepositoryPage() {
   };
 
   const handleFilterByName = (event) => {
-    // setPage(0);
-    console.log('handleFilterByName', event.target.value);
     setFilterName(event.target.value);
   };
-
-  const handleClick = async (row) => {
-    console.log('handleClick', row);
-    // setSelectedRepository(row);
-    // setOpenDialog(true);
-  }
-
-  // const closeDialog = (shouldRefetch) => {
-  //   if (shouldRefetch) {
-  //     setReload(!reload);
-  //   }
-  //   setSelectedRepository(null);
-  //   setOpenDialog(false);
-  // }
 
 
   return (
@@ -158,7 +140,7 @@ export default function RepositoryPage() {
                   .map((row) => (
                     <RepositoryTableRow
                       key={row._id}
-                      handleClick={(event) => handleClick(row)}
+                      // handleClick={(event) => handleClick(row)}
                       searchTerm={filterName}
                       avatarUrl={row.owner.avatar_url}
                       isFollowing={row.isFollowing}

@@ -1,1 +1,1 @@
-export { default as ProductsView } from './feed-view';
+export { default as FeedView } from './feed-view';

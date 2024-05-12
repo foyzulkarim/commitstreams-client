@@ -9,7 +9,9 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { fetchWrapper } from 'src/utils/api';
+import { fetchWrapperAxios } from 'src/utils/api';
+
+import { useAlert } from 'src/contexts/AlertContext';
 
 import Scrollbar from 'src/components/scrollbar';
 
@@ -25,6 +27,8 @@ import UserTableToolbar from '../user-table-toolbar';
 export default function UserPage() {
 
   const rowsPerPage = 10;
+
+  const { showAlert } = useAlert();
 
   const [page, setPage] = useState(0);
 
@@ -45,28 +49,25 @@ export default function UserPage() {
   const prevFilterNameRef = useRef();
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL;
     const prevFilterName = prevFilterNameRef.current;
-
-    console.log('page', page);
 
     const loadUsers = async () => {
       try {
         // Load users from the backend using fetch
-        const data = await fetchWrapper(`${apiUrl}/v1/users/search?keyword=${filterName}&page=${page}&orderBy=${orderBy}&order=${order}`);
+        const data = await fetchWrapperAxios(`/v1/users/search?keyword=${filterName}&page=${page}&orderBy=${orderBy}&order=${order}`);
         setUsers(data);
       } catch (error) {
-        console.error('Load users error:', error);
+        showAlert('Load users error', 'error');
       }
     };
 
     const loadTotal = async () => {
       try {
         // Load users from the backend using fetch
-        const count = await fetchWrapper(`${apiUrl}/v1/users/count?keyword=${filterName}`);
+        const count = await fetchWrapperAxios(`/v1/users/count?keyword=${filterName}`);
         setTotal(count.total);
       } catch (error) {
-        console.error('Load total error:', error);
+        showAlert('Load total error', 'error');
       }
     };
 
@@ -78,8 +79,7 @@ export default function UserPage() {
     loadUsers();
 
     prevFilterNameRef.current = filterName;
-
-  }, [filterName, page, order, orderBy, reload]);
+  }, [filterName, page, order, orderBy, reload, showAlert, total]);
 
 
   const handleSort = (event, id) => {
@@ -95,13 +95,10 @@ export default function UserPage() {
   };
 
   const handleFilterByName = (event) => {
-    // setPage(0);
-    console.log('handleFilterByName', event.target.value);
     setFilterName(event.target.value);
   };
 
   const handleClick = async (row) => {
-    console.log('handleClick', row);
     setSelectedUser(row);
     setOpenDialog(true);
   }

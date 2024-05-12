@@ -10,6 +10,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 
 import { fetchWrapperAxios } from 'src/utils/api';
 
+import { useAlert } from 'src/contexts/AlertContext';
 import { AuthContext } from 'src/contexts/AuthContext';
 
 import ProfileCard from './profile-card';
@@ -19,6 +20,7 @@ export default function AlertDialog({ open, closeDialog, user }) {
 
   // get current user from AuthContext
   const { userProfile: currentUser } = useContext(AuthContext);
+  const { showAlert } = useAlert();
 
   // each follower will have {id: string, date: string} values in the array
   const followers = user.csFollowers ?? [];
@@ -28,15 +30,19 @@ export default function AlertDialog({ open, closeDialog, user }) {
   };
 
   const handleFollow = async () => {
-    console.log('Follow', user.username);
     const apiUrl = import.meta.env.VITE_API_URL;
     // api call to follow user: /v1/users/:username/follow
     try {
       const response = await fetchWrapperAxios(`${apiUrl}/v1/users/${user._id}/follow`);
-      console.log('Follow response:', response);
+      if (!response.ok) {
+        showAlert('Follow user error', 'error');
+      }
+      else {
+        showAlert('User followed', 'success');
+      }
       handleClose(true);
     } catch (error) {
-      console.log('follow error', error);
+      showAlert('Follow user error', 'error');
       handleClose();
     }
   }

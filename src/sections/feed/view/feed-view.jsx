@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import LoadingButton from '@mui/lab/LoadingButton';
 import CloudSyncIcon from '@mui/icons-material/CloudSync';
 
 import { fetchWrapperAxios } from 'src/utils/api';
@@ -17,14 +17,18 @@ export default function FeedView() {
   const [pulls, setPulls] = useState([]);
   const [reload, setReload] = useState(false);
   const { showAlert } = useAlert();
+  const [loading, setLoading] = useState(false);
 
   const loadPullRequests = async () => {
     try {
+      setLoading(true);
       const data = await fetchWrapperAxios(`/v1/pulls/search`);
       setPulls(data);
       showAlert('Pull requests loaded', 'success');
+      setLoading(false);
     } catch (error) {
       showAlert('Pull requests error', 'error');
+      setLoading(false);
     }
   };
 
@@ -54,7 +58,7 @@ export default function FeedView() {
         sx={{ mb: 5 }}
       >
         <Stack direction="row" justifyContent="flex-start">
-          <Button variant='contained' startIcon={<CloudSyncIcon />} onClick={syncWithGitHubHandler}>Sync with GitHub</Button>
+          <LoadingButton loading={loading} disabled={loading} variant='contained' startIcon={<CloudSyncIcon />} onClick={syncWithGitHubHandler}> <span>Sync with GitHub</span></LoadingButton>
         </Stack>
       </Stack>
 

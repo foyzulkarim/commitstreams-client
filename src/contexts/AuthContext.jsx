@@ -45,7 +45,6 @@ const AuthProvider = ({ children }) => {
         }
         else { showAlert(`Login failed.`, 'error'); }
       }
-      return;
     }
 
     fetchUserProfile();

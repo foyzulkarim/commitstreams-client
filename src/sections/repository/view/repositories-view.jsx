@@ -108,7 +108,7 @@ export default function RepositoryPage() {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Repositorys</Typography>
+        <Typography variant="h4">Repositories</Typography>
       </Stack>
 
       <Card>

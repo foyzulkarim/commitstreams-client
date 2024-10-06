@@ -4,6 +4,8 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { alpha, useTheme } from '@mui/material/styles';
 
+import { useRouter } from 'src/routes/hooks';
+
 import { bgGradient } from 'src/theme/css';
 
 // import Logo from 'src/components/logo';
@@ -12,12 +14,19 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
+
+  const router = useRouter();
+
   const theme = useTheme();
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleGitHubLogin = () => {
     window.location.href = `${apiUrl}/auth/github`; // Adjust for your backend port
   };
+
+  const handlePasswordLogin = () => {
+    router.push('/login-password');
+  }
 
 
   return (
@@ -39,7 +48,7 @@ export default function LoginView() {
 
           }}
         >
-          <Stack>
+          <Stack spacing={2}>
             <Button
               size="large"
               color="inherit"
@@ -49,6 +58,27 @@ export default function LoginView() {
             >
               <Iconify icon="ant-design:github-filled" color="black" />
               &nbsp; Login with GitHub
+            </Button>
+            <Button
+              size="large"
+              color="inherit"
+              variant="outlined"
+              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
+              onClick={handlePasswordLogin}
+
+            >
+              <Iconify icon="ant-design:lock-filled" color="black" />
+              &nbsp; Login with Password
+            </Button>
+            <Button
+              size="large"
+              color="inherit"
+              variant="outlined"
+              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
+              onClick={() => router.push('/register')}
+            >
+              <Iconify icon="ant-design:user-add-outlined" color="black" />
+              &nbsp; Register
             </Button>
           </Stack>
         </Card>

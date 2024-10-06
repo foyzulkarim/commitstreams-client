@@ -10,11 +10,13 @@ export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
+export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const LoginSuccess = lazy(() => import('src/pages/login-success'));
 export const AddRepositoryView = lazy(() => import('src/pages/add-repository'));
 export const RepositoriesView = lazy(() => import('src/pages/repositories'));
 export const FeedPage = lazy(() => import('src/pages/feed'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const RegisterPage = lazy(() => import('src/pages/register'));
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +57,14 @@ export default function Router() {
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: 'login-password',
+      element: <SignInPage />,
+    },
+    {
+      path: 'register',
+      element: <RegisterPage />,
     },
     {
       path: 'login-success',

@@ -80,9 +80,14 @@ export default function SignInView() {
           <Typography variant="h5">Sign in</Typography>
           <Typography variant="body2" color="text.secondary">
             Don&apos;t have an account?
-            <Link variant="subtitle2" sx={{ ml: 0.5 }}>
+            <Typography
+              component="a"
+              variant="subtitle2"
+              sx={{ ml: 0.5, cursor: 'pointer' }}
+              onClick={() => router.push('/register')}
+            >
               Get started
-            </Link>
+            </Typography>
           </Typography>
         </Box>
 

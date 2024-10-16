@@ -11,48 +11,63 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { bgGradient } from 'src/theme/css';
+import { useAlert } from 'src/contexts/AlertContext';
 
-import Iconify from 'src/components/iconify';
-
-export default function LoginView() {
+export default function RegisterView() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
 
-  const handleGitHubLogin = () => {
-    window.location.href = `${apiUrl}/auth/github`;
+  const validateEmail = (value) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(value);
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${apiUrl}/auth/google`;
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    if (newEmail && !validateEmail(newEmail)) {
+      setEmailError('Please enter a valid email address');
+    } else {
+      setEmailError('');
+    }
   };
 
-  const handleEmailLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    console.log('handleRegister', email, password);
+
     try {
-      const response = await fetch(`${apiUrl}/login`, {
+      const response = await fetch(`${apiUrl}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: email, password }),
+        body: JSON.stringify({ email, password }),
         credentials: 'include',
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Login successful
-        navigate('/'); // Redirect to dashboard or home page
+        showAlert('Registration successful', 'success');
+        navigate('/login');
       } else {
-        // Login failed
-        setError(data.message || 'Login failed');
+        setError(data.message || 'Registration failed');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -80,11 +95,12 @@ export default function LoginView() {
           <Stack spacing={3}>
             <TextField
               label="Email"
-              type="email"
               variant="outlined"
               fullWidth
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
+              error={!!emailError}
+              helperText={emailError}
             />
             <TextField
               label="Password"
@@ -93,6 +109,14 @@ export default function LoginView() {
               fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              label="Confirm Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
             {error && (
               <Typography color="error" variant="body2">
@@ -103,36 +127,16 @@ export default function LoginView() {
               size="large"
               variant="contained"
               color="primary"
-              onClick={handleEmailLogin}
+              onClick={handleRegister}
             >
-              Login with Email
+              Register
             </Button>
             <Typography variant="body2" align="center">
-              Don&apos;t have an account?{' '}
-              <Link component={RouterLink} to="/register" variant="subtitle2">
-                Register
+              Already have an account?{' '}
+              <Link component={RouterLink} to="/login" variant="subtitle2">
+                Login
               </Link>
             </Typography>
-            <Button
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-              onClick={handleGitHubLogin}
-            >
-              <Iconify icon="ant-design:github-filled" color="black" />
-              &nbsp; Login with GitHub
-            </Button>
-            <Button
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-              onClick={handleGoogleLogin}
-            >
-              <Iconify icon="flat-color-icons:google" />
-              &nbsp; Login with Google
-            </Button>
           </Stack>
         </Card>
       </Stack>

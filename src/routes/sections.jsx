@@ -15,6 +15,7 @@ export const AddRepositoryView = lazy(() => import('src/pages/add-repository'));
 export const RepositoriesView = lazy(() => import('src/pages/repositories'));
 export const FeedPage = lazy(() => import('src/pages/feed'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+export const RegisterPage = lazy(() => import('src/pages/register'));
 
 // ----------------------------------------------------------------------
 
@@ -67,6 +68,10 @@ export default function Router() {
     {
       path: '*',
       element: <Navigate to="/404" replace />,
+    },
+    {
+      path: 'register',
+      element: <RegisterPage />,
     },
   ]);
 

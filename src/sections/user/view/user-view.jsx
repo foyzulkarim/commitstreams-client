@@ -134,11 +134,9 @@ export default function UserPage() {
 
                 onRequestSort={handleSort}
                 headLabel={[
-                  { id: 'username', label: 'Username' },
                   { id: 'displayName', label: 'Name' },
-                  { id: 'created_at', label: 'GitHub profile created' },
-                  { id: 'location', label: 'Location' },
-                  { id: 'public_repos', label: 'Public repos', },
+                  { id: 'email', label: 'Email' },
+                  { id: 'authType', label: 'Auth type' },
                 ]}
               />
               <TableBody>
@@ -146,12 +144,10 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row._id}
-                      username={row.username}
                       displayName={row.displayName}
-                      location={row.location}
-                      created_at={row.created_at}
-                      avatarUrl={row.avatarUrl}
-                      public_repos={row.public_repos}
+                      email={row.email}
+                      authType={row.authType}
+                      isAdmin={row.isAdmin}
                       handleClick={(event) => handleClick(row)}
                       searchTerm={filterName}
                     />

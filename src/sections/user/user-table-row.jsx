@@ -54,7 +54,6 @@ export default function UserTableRow({
   handleClick,
   isAdmin,
 }) {
-  console.log(avatarUrl);
   return (
     <TableRow hover tabIndex={-1} role="checkbox" onClick={handleClick}>
       <TableCell><TextHighlight

@@ -15,10 +15,10 @@ import { useAlert } from 'src/contexts/AlertContext';
 
 import Scrollbar from 'src/components/scrollbar';
 
-import RoleDialog from './role-dialog';
 import TableNoData from '../table-no-data';
 import RoleTableRow from '../role-table-row';
 import RoleTableHead from '../role-table-head';
+import RoleCreateForm from '../role-create-form';
 import RoleTableToolbar from '../role-table-toolbar';
 
 // ----------------------------------------------------------------------
@@ -123,6 +123,7 @@ export default function RoleView() {
                 onRequestSort={handleSort}
                 headLabel={[
                   { id: 'name', label: 'Name' },
+                  { id: 'displayName', label: 'Display Name' },
                   { id: 'description', label: 'Description' },
                   { id: 'permissions', label: 'Permissions' },
                 ]}
@@ -133,6 +134,7 @@ export default function RoleView() {
                     <RoleTableRow
                       key={row._id}
                       name={row.name}
+                      displayName={row.displayName}
                       description={row.description}
                       permissions={row.permissions}
                       handleClick={() => handleClick(row)}
@@ -154,7 +156,7 @@ export default function RoleView() {
           rowsPerPageOptions={[]}
         />
       </Card>
-      {selectedRole && <RoleDialog open={openDialog} closeDialog={closeDialog} role={selectedRole} setSelectedRole={setSelectedRole} />}
+      {selectedRole && <RoleCreateForm open={openDialog} onClose={closeDialog} role={selectedRole} />}
     </Container>
   );
 }

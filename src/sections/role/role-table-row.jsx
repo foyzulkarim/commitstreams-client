@@ -11,6 +11,7 @@ import TextHighlight from 'src/components/text-highlight';
 
 export default function RoleTableRow({
   name,
+  displayName,
   description,
   permissions,
   handleClick,
@@ -23,14 +24,18 @@ export default function RoleTableRow({
       </TableCell>
 
       <TableCell>
+        <TextHighlight text={displayName} searchKeyword={searchTerm} />
+      </TableCell>
+
+      <TableCell>
         <TextHighlight text={description} searchKeyword={searchTerm} />
       </TableCell>
 
       <TableCell>
         <Stack direction="row" spacing={1} flexWrap="wrap">
           {permissions?.map((permission) => (
-            <Chip 
-              key={permission} 
+            <Chip
+              key={permission}
               label={permission}
               size="small"
               variant="outlined"
@@ -44,6 +49,7 @@ export default function RoleTableRow({
 
 RoleTableRow.propTypes = {
   name: PropTypes.string,
+  displayName: PropTypes.string,
   description: PropTypes.string,
   permissions: PropTypes.array,
   handleClick: PropTypes.func,

@@ -1,7 +1,3 @@
-import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
-import SourceOutlinedIcon from '@mui/icons-material/SourceOutlined';
-import RssFeedOutlinedIcon from '@mui/icons-material/RssFeedOutlined';
-
 import SvgColor from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -12,30 +8,30 @@ const icon = (name) => (
 
 const navConfig = [
   {
-    title: 'feed',
+    title: 'Feed',
     path: '/',
-    icon: <RssFeedOutlinedIcon />,
+    icon: icon('ic_feed'),
   },
   {
-    title: 'Users',
+    title: 'repositories',
+    path: '/repositories',
+    icon: icon('ic_repository'),
+  },
+  {
+    title: 'users',
     path: '/user',
     icon: icon('ic_user'),
   },
   {
-    title: 'Add repository',
-    path: '/add-repository',
-    icon: <CodeOutlinedIcon />,
-  },
-  {
-    title: 'Repositories',
-    path: '/repositories',
-    icon: <SourceOutlinedIcon />,
+    title: 'roles',
+    path: '/role',
+    icon: icon('ic_role'),
   },
   {
     title: 'analytics',
     path: '/analytics',
     icon: icon('ic_analytics'),
-  }
+  },
 ];
 
 export default navConfig;

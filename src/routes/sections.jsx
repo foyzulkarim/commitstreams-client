@@ -16,6 +16,7 @@ export const RepositoriesView = lazy(() => import('src/pages/repositories'));
 export const FeedPage = lazy(() => import('src/pages/feed'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
+export const RolePage = lazy(() => import('src/pages/role'));
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +52,7 @@ export default function Router() {
         { path: 'repositories', element: <RepositoriesView /> },
         { path: 'analytics', element: <IndexPage /> },
         { element: <FeedPage />, index: true },
+        { path: 'role', element: <RolePage /> },
       ],
     },
     {

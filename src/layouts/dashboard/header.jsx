@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -46,6 +47,18 @@ export default function Header({ onOpenNav }) {
     </>
   );
 
+  // State to control the background transparency
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <AppBar
       sx={{
@@ -53,7 +66,7 @@ export default function Header({ onOpenNav }) {
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
         ...bgBlur({
-          color: theme.palette.background.default,
+          color: scrollPosition > 0 ? theme.palette.background.default : theme.palette.common.white,
         }),
         transition: theme.transitions.create(['height'], {
           duration: theme.transitions.duration.shorter,

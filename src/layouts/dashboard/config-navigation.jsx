@@ -28,6 +28,11 @@ const navConfig = [
     icon: icon('ic_role'),
   },
   {
+    title: 'resources',
+    path: '/resource',
+    icon: icon('ic_resource'),
+  },
+  {
     title: 'analytics',
     path: '/analytics',
     icon: icon('ic_analytics'),

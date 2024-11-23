@@ -5,6 +5,7 @@
   "version": "1.8.0",
   "private": false,
   "scripts": {
+    "prepare": "husky",
     "dev": "vite",
     "start": "vite preview",
     "build": "vite build",
@@ -50,6 +51,8 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.2.25",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@storybook/addon-essentials": "^8.0.4",
     "@storybook/addon-interactions": "^8.0.4",
     "@storybook/addon-links": "^8.0.4",
@@ -71,6 +74,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.8.0",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "husky": "^9.1.6",
     "prettier": "^3.0.3",
     "storybook": "^8.0.4",
     "vite": "^4.4.11",

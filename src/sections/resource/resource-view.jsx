@@ -49,6 +49,7 @@ export default function ResourceView() {
     const loadTotal = async () => {
       try {
         const count = await fetchWrapperAxios(`/v1/resources/count?keyword=${filterName}`);
+        console.log(count);
         setTotal(count.total);
       } catch (error) {
         showAlert('Load total error', 'error');
@@ -115,7 +116,7 @@ export default function ResourceView() {
                     searchTerm={filterName}
                   />
                 ))}
-                {!total && <TableNoData query={filterName} />}
+                {!resources.length && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>

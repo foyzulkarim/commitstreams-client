@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import MenuItem from '@mui/material/MenuItem';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,6 +17,7 @@ import { fetchWrapperAxios } from 'src/utils/api';
 
 import { useAlert } from 'src/contexts/AlertContext';
 
+import RHFSelect from 'src/components/hook-form/rhf-select';
 import FormProvider from 'src/components/hook-form/form-provider';
 import RHFTextField from 'src/components/hook-form/rhf-text-field';
 
@@ -24,10 +26,16 @@ export default function ResourceCreateForm({ open, onClose, resource }) {
   const { showAlert } = useAlert();
   const ResourceSchema = Yup.object().shape({
     name: Yup.string().required('Resource name is required'),
+    displayName: Yup.string().required('Display name is required'),
+    identifier: Yup.string().required('Identifier is required'),
+    type: Yup.string().oneOf(['api', 'ui', 'menu']).required('Type is required'),
     description: Yup.string().nullable(),
   });
   const defaultValues = {
     name: resource?.name || '',
+    displayName: resource?.displayName || '',
+    identifier: resource?.identifier || '',
+    type: resource?.type || 'api',
     description: resource?.description || '',
   };
   const methods = useForm({
@@ -66,6 +74,13 @@ export default function ResourceCreateForm({ open, onClose, resource }) {
           <Box sx={{ pt: 2 }}>
             <Stack spacing={3}>
               <RHFTextField name="name" label="Resource Name" />
+              <RHFTextField name="displayName" label="Display Name" />
+              <RHFTextField name="identifier" label="Identifier" />
+              <RHFSelect name="type" label="Resource Type">
+                <MenuItem value="api">API</MenuItem>
+                <MenuItem value="ui">UI</MenuItem>
+                <MenuItem value="menu">Menu</MenuItem>
+              </RHFSelect>
               <RHFTextField
                 name="description"
                 label="Description"

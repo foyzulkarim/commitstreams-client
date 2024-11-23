@@ -18,7 +18,10 @@ export default function RoleTableRow({
   searchTerm,
 }) {
   return (
-    <TableRow hover tabIndex={-1} role="checkbox" onClick={handleClick}>
+    <TableRow hover tabIndex={-1} onClick={handleClick}>
+      <TableCell padding="checkbox">
+        <input type="checkbox" />
+      </TableCell>
       <TableCell>
         <TextHighlight text={name} searchKeyword={searchTerm} />
       </TableCell>

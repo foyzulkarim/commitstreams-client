@@ -15,63 +15,53 @@ import { useAlert } from 'src/contexts/AlertContext';
 
 import Scrollbar from 'src/components/scrollbar';
 
-import TableNoData from '../table-no-data';
-import RoleTableRow from '../role-table-row';
-import RoleTableHead from '../role-table-head';
-import RoleCreateForm from '../role-create-form';
-import RoleTableToolbar from '../role-table-toolbar';
-
+import TableNoData from './table-no-data';
+import ResourceTableRow from './resource-table-row';
+import ResourceTableHead from './resource-table-head';
+import ResourceCreateForm from './resource-create-form';
+import ResourceTableToolbar from './resource-table-toolbar';
 // ----------------------------------------------------------------------
-
-export default function RoleView() {
+export default function ResourceView() {
   const rowsPerPage = 10;
-
   const { showAlert } = useAlert();
-
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [reload, setReload] = useState(false);
-
-  const [roles, setRoles] = useState([]);
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [resources, setResources] = useState([]);
+  const [selectedResource, setSelectedResource] = useState(null);
   const [total, setTotal] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-
   const prevFilterNameRef = useRef();
-
   useEffect(() => {
     const prevFilterName = prevFilterNameRef.current;
-
-    const loadRoles = async () => {
+    const loadResources = async () => {
       try {
-        const data = await fetchWrapperAxios(`/v1/roles/search?keyword=${filterName}&page=${page}&orderBy=${orderBy}&order=${order}`);
-        setRoles(data);
+        const data = await fetchWrapperAxios(
+          `/v1/resources/search?keyword=${filterName}&page=${page}&orderBy=${orderBy}&order=${order}`
+        );
+        setResources(data);
       } catch (error) {
-        showAlert('Load roles error', 'error');
+        showAlert('Load resources error', 'error');
       }
     };
-
     const loadTotal = async () => {
       try {
-        const count = await fetchWrapperAxios(`/v1/roles/count?keyword=${filterName}`);
+        const count = await fetchWrapperAxios(`/v1/resources/count?keyword=${filterName}`);
+        console.log(count);
         setTotal(count.total);
       } catch (error) {
         showAlert('Load total error', 'error');
       }
     };
-
     if (filterName !== prevFilterName) {
       setPage(0);
       loadTotal();
     }
-
-    loadRoles();
-
+    loadResources();
     prevFilterNameRef.current = filterName;
   }, [filterName, page, order, orderBy, reload, showAlert]);
-
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -79,76 +69,58 @@ export default function RoleView() {
       setOrderBy(id);
     }
   };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
   };
-
   const handleClick = async (row) => {
-    setSelectedRole(row);
+    setSelectedResource(row);
     setOpenDialog(true);
-  }
-
+  };
   const closeDialog = (shouldRefetch) => {
     if (shouldRefetch) {
       setReload(!reload);
     }
-    setSelectedRole(null);
+    setSelectedResource(null);
     setOpenDialog(false);
-  }
-
-  console.log('Role', roles);
-
+  };
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Roles</Typography>
+        <Typography variant="h4">Resources</Typography>
       </Stack>
-
       <Card>
-        <RoleTableToolbar
-          filterName={filterName}
-          onFilterName={handleFilterByName}
-        />
-
+        <ResourceTableToolbar filterName={filterName} onFilterName={handleFilterByName} />
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <RoleTableHead
+              <ResourceTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={roles.length}
+                rowCount={resources.length}
                 onRequestSort={handleSort}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'displayName', label: 'Display Name' },
                   { id: 'description', label: 'Description' },
-                  { id: 'permissions', label: 'Permissions' },
                 ]}
               />
               <TableBody>
-                {roles
-                  .map((row) => (
-                    <RoleTableRow
-                      key={row._id}
-                      name={row.name}
-                      displayName={row.displayName}
-                      description={row.description}
-                      permissions={row.permissions}
-                      handleClick={() => handleClick(row)}
-                      searchTerm={filterName}
-                    />
-                  ))}
-                {!total && <TableNoData query={filterName} />}
+                {resources.map((row) => (
+                  <ResourceTableRow
+                    key={row._id}
+                    name={row.name}
+                    description={row.description}
+                    handleClick={() => handleClick(row)}
+                    searchTerm={filterName}
+                  />
+                ))}
+                {!resources.length && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>
         </Scrollbar>
-
         <TablePagination
           page={page}
           component="div"
@@ -158,7 +130,9 @@ export default function RoleView() {
           rowsPerPageOptions={[]}
         />
       </Card>
-      {selectedRole && <RoleCreateForm open={openDialog} onClose={closeDialog} role={selectedRole} />}
+      {selectedResource && (
+        <ResourceCreateForm open={openDialog} onClose={closeDialog} resource={selectedResource} />
+      )}
     </Container>
   );
 }

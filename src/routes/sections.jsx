@@ -17,6 +17,7 @@ export const FeedPage = lazy(() => import('src/pages/feed'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const RolePage = lazy(() => import('src/pages/role'));
+export const ResourcePage = lazy(() => import('src/pages/resource')); // Add this line
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ export default function Router() {
         { path: 'analytics', element: <IndexPage /> },
         { element: <FeedPage />, index: true },
         { path: 'role', element: <RolePage /> },
+        { path: 'resource', element: <ResourcePage /> }, // Add this line
       ],
     },
     {

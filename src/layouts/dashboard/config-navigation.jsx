@@ -1,41 +1,37 @@
-import SvgColor from 'src/components/svg-color';
+import { Box, Home, Users, Shield, Database, BarChart } from 'lucide-react';
 
 // ----------------------------------------------------------------------
-
-const icon = (name) => (
-  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
-);
 
 const navConfig = [
   {
     title: 'Feed',
     path: '/',
-    icon: icon('ic_feed'),
+    icon: <Home size={24} />,
   },
   {
     title: 'repositories',
     path: '/repositories',
-    icon: icon('ic_repository'),
+    icon: <Database size={24} />,
   },
   {
     title: 'users',
     path: '/user',
-    icon: icon('ic_user'),
+    icon: <Users size={24} />,
   },
   {
     title: 'roles',
     path: '/role',
-    icon: icon('ic_role'),
+    icon: <Shield size={24} />,
   },
   {
     title: 'resources',
     path: '/resource',
-    icon: icon('ic_resource'),
+    icon: <Box size={24} />,
   },
   {
     title: 'analytics',
     path: '/analytics',
-    icon: icon('ic_analytics'),
+    icon: <BarChart size={24} />,
   },
 ];
 

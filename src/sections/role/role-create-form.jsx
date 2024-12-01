@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -20,6 +21,8 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import RHFTextField from 'src/components/hook-form/rhf-text-field';
 import RHFMultiSelect from 'src/components/hook-form/rhf-multi-select';
 
+import PermissionsManager from './permission';
+
 // ----------------------------------------------------------------------
 
 const AVAILABLE_PERMISSIONS = [
@@ -29,6 +32,63 @@ const AVAILABLE_PERMISSIONS = [
   'write:roles',
   // Add more permissions as needed
 ];
+
+
+const permissionsProps = {
+  role: {
+    _id: "role_admin",
+    name: "Super Administrator",
+  },
+  resources: [
+    {
+      _id: "resource_users",
+      name: "User Management",
+      is_system_managed: false,
+      api: {
+        endpoint: "/api/users",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+      },
+      client: {
+        component: "UserManagementPage",
+        actions: [
+          {
+            name: "create_user",
+            label: "Create User",
+            visibility: { show: true, enabled: true },
+          },
+          {
+            name: "edit_user",
+            label: "Edit User",
+            visibility: { show: true, enabled: true },
+          },
+        ],
+      },
+    },
+  ],
+  permissions: [
+    {
+      resource_id: "resource_users",
+      api_access: {
+        methods: ["GET", "POST"],
+        custom_rate_limit: {
+          requests: 100,
+          duration: 3600,
+        },
+      },
+      client_access: {
+        actions: [
+          {
+            name: "create_user",
+            label: "Create User",
+            visibility: { show: true, enabled: true },
+          },
+        ],
+      },
+    },
+  ],
+};
+
+
 
 export default function RoleCreateForm({ open, onClose, role }) {
   const { showAlert } = useAlert();
@@ -84,7 +144,11 @@ export default function RoleCreateForm({ open, onClose, role }) {
 
   return (
     <Dialog open={open} onClose={() => onClose(false)} maxWidth="sm" fullWidth>
-      <DialogTitle>{role?._id ? 'Edit Role' : 'Create New Role'}</DialogTitle>
+      <DialogTitle>
+        <Typography variant="h3">
+          {role?._id ? 'Edit Role' : 'Create New Role'}
+        </Typography>
+      </DialogTitle>
 
       <DialogContent>
         <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -109,6 +173,7 @@ export default function RoleCreateForm({ open, onClose, role }) {
             </Stack>
           </Box>
         </FormProvider>
+        <PermissionsManager {...permissionsProps} />
       </DialogContent>
 
       <DialogActions>

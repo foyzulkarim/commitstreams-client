@@ -18,6 +18,7 @@ import { fetchWrapperAxios } from 'src/utils/api';
 
 import { useAlert } from 'src/contexts/AlertContext';
 
+
 // ----------------------------------------------------------------------
 
 const AVAILABLE_PERMISSIONS = [
@@ -27,6 +28,7 @@ const AVAILABLE_PERMISSIONS = [
   'write:roles',
   // Add more permissions as needed
 ];
+
 
 export default function RoleDialog({ open, closeDialog, role, setSelectedRole }) {
   const { showAlert } = useAlert();
@@ -122,7 +124,9 @@ export default function RoleDialog({ open, closeDialog, role, setSelectedRole })
               ))}
             </Select>
           </FormControl>
+
         </Box>
+
       </DialogContent>
       <DialogActions>
         <Button onClick={() => closeDialog(false)}>Cancel</Button>

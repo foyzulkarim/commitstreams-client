@@ -15,11 +15,11 @@ import { useAlert } from 'src/contexts/AlertContext';
 
 import Scrollbar from 'src/components/scrollbar';
 
-import TableNoData from '../table-no-data';
-import RoleTableRow from '../role-table-row';
-import RoleTableHead from '../role-table-head';
-import RoleCreateForm from '../role-create-form';
-import RoleTableToolbar from '../role-table-toolbar';
+import TableNoData from './table-no-data';
+import RoleTableRow from './role-table-row';
+import RoleTableHead from './role-table-head';
+import RoleCreateForm from './role-create-form';
+import RoleTableToolbar from './role-table-toolbar';
 
 // ----------------------------------------------------------------------
 

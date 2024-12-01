@@ -7,7 +7,6 @@ import Tabs from '@mui/material/Tabs';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
@@ -18,12 +17,11 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import ShieldIcon from '@mui/icons-material/Shield';
 import MonitorIcon from '@mui/icons-material/Monitor';
-import SettingsIcon from '@mui/icons-material/Settings';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-const PermissionsManager = ({ role, resources, permissions }) => {
+const PermissionsManager = ({ resources, permissions }) => {
   const [activeTab, setActiveTab] = useState("api");
   const [expandedCards, setExpandedCards] = useState({});
   const [selectAll, setSelectAll] = useState({
@@ -31,7 +29,7 @@ const PermissionsManager = ({ role, resources, permissions }) => {
     client: false,
   });
   const [resourceSelections, setResourceSelections] = useState({});
-  const [hasChanges, setHasChanges] = useState(false);
+  const [setHasChanges] = useState(false);
   const [showUnsavedAlert, setShowUnsavedAlert] = useState(false);
 
   // Initialize resource selections
@@ -124,12 +122,6 @@ const PermissionsManager = ({ role, resources, permissions }) => {
     setHasChanges(true);
   };
 
-  const handleSave = () => {
-    // TODO: Implement save logic
-    setHasChanges(false);
-    setShowUnsavedAlert(false);
-  };
-
   // Render API Permissions Section
   const renderAPIPermissions = () => (
     <Box sx={{ mt: 2 }}>
@@ -146,9 +138,6 @@ const PermissionsManager = ({ role, resources, permissions }) => {
       {resources
         .filter((resource) => resource.api)
         .map((resource) => {
-          const permission = permissions.find(
-            (p) => p.resource_id === resource._id
-          );
           const isExpanded = expandedCards[resource._id];
 
           return (
@@ -218,22 +207,6 @@ const PermissionsManager = ({ role, resources, permissions }) => {
                       />
                     ))}
                   </Box>
-
-                  {permission?.api_access?.custom_rate_limit && (
-                    <Box
-                      sx={{ mt: 2, p: 1, bgcolor: "grey.100", borderRadius: 1 }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <SettingsIcon sx={{ fontSize: "small", mr: 1 }} />
-                        <Typography variant="body2">
-                          Rate Limit:{" "}
-                          {permission.api_access.custom_rate_limit.requests}
-                          requests /{" "}
-                          {permission.api_access.custom_rate_limit.duration}s
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
                 </Box>
               </Collapse>
             </Paper>
@@ -397,21 +370,10 @@ const PermissionsManager = ({ role, resources, permissions }) => {
         }}
       >
         <Box>
-          <Typography variant="h4" sx={{ mb: 1 }}>
+          <Typography variant="h5" sx={{ mb: 1 }}>
             Permissions Management
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            Role: {role.name}
-          </Typography>
         </Box>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSave}
-          disabled={!hasChanges}
-        >
-          Save Changes
-        </Button>
       </Box>
 
       {showUnsavedAlert && (
@@ -455,7 +417,6 @@ const PermissionsManager = ({ role, resources, permissions }) => {
 };
 
 PermissionsManager.propTypes = {
-  role: PropTypes.object.isRequired,
   resources: PropTypes.array.isRequired,
   permissions: PropTypes.array.isRequired,
 };

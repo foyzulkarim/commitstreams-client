@@ -19,26 +19,12 @@ import { useAlert } from 'src/contexts/AlertContext';
 
 import FormProvider from 'src/components/hook-form/form-provider';
 import RHFTextField from 'src/components/hook-form/rhf-text-field';
-import RHFMultiSelect from 'src/components/hook-form/rhf-multi-select';
 
 import PermissionsManager from './permission';
 
 // ----------------------------------------------------------------------
 
-const AVAILABLE_PERMISSIONS = [
-  'read:users',
-  'write:users',
-  'read:roles',
-  'write:roles',
-  // Add more permissions as needed
-];
-
-
 const permissionsProps = {
-  role: {
-    _id: "role_admin",
-    name: "Super Administrator",
-  },
   resources: [
     {
       _id: "resource_users",
@@ -70,10 +56,6 @@ const permissionsProps = {
       resource_id: "resource_users",
       api_access: {
         methods: ["GET", "POST"],
-        custom_rate_limit: {
-          requests: 100,
-          duration: 3600,
-        },
       },
       client_access: {
         actions: [
@@ -87,8 +69,6 @@ const permissionsProps = {
     },
   ],
 };
-
-
 
 export default function RoleCreateForm({ open, onClose, role }) {
   const { showAlert } = useAlert();
@@ -161,14 +141,6 @@ export default function RoleCreateForm({ open, onClose, role }) {
                 label="Description"
                 multiline
                 rows={4}
-              />
-              <RHFMultiSelect
-                name="permissions"
-                label="Permissions"
-                options={AVAILABLE_PERMISSIONS.map((permission) => ({
-                  value: permission,
-                  label: permission,
-                }))}
               />
             </Stack>
           </Box>

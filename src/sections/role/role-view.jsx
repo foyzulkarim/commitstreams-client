@@ -158,7 +158,16 @@ export default function RoleView() {
           rowsPerPageOptions={[]}
         />
       </Card>
-      {selectedRole && <RoleCreateForm open={openDialog} onClose={closeDialog} role={selectedRole} />}
+      {selectedRole && (
+        <RoleCreateForm
+          open={openDialog}
+          onClose={closeDialog}
+          role={{
+            ...selectedRole,
+            permissions: selectedRole.permissions.map((perm) => perm.permissionString),
+          }}
+        />
+      )}
     </Container>
   );
 }

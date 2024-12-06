@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
@@ -24,62 +25,39 @@ import PermissionsManager from './permission';
 
 // ----------------------------------------------------------------------
 
-const permissionsProps = {
-  resources: [
-    {
-      _id: "resource_users",
-      name: "User Management",
-      is_system_managed: false,
-      api: {
-        endpoint: "/api/users",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-      },
-      client: {
-        component: "UserManagementPage",
-        actions: [
-          {
-            name: "create_user",
-            label: "Create User",
-            visibility: { show: true, enabled: true },
-          },
-          {
-            name: "edit_user",
-            label: "Edit User",
-            visibility: { show: true, enabled: true },
-          },
-        ],
-      },
-    },
-  ],
-  permissions: [
-    {
-      resource_id: "resource_users",
-      api_access: {
-        methods: ["GET", "POST"],
-      },
-      client_access: {
-        actions: [
-          {
-            name: "create_user",
-            label: "Create User",
-            visibility: { show: true, enabled: true },
-          },
-        ],
-      },
-    },
-  ],
-};
-
 export default function RoleCreateForm({ open, onClose, role }) {
   const { showAlert } = useAlert();
+
+  const [resources, setResources] = useState([]);
+  const [loadingResources, setLoadingResources] = useState(false);
+  const [errorResources, setErrorResources] = useState(null);
+
+  // Fetch resources from the server
+  useEffect(() => {
+    const fetchResources = async () => {
+      setLoadingResources(true);
+      setErrorResources(null);
+      try {
+        const data = await fetchWrapperAxios('/v1/resources');
+        setResources(data.resources);
+      } catch (error) {
+        setErrorResources('Failed to load resources.');
+        showAlert('Failed to load resources.', 'error');
+      } finally {
+        setLoadingResources(false);
+      }
+    };
+
+    if (open) {
+      fetchResources();
+    }
+  }, [open, showAlert]);
 
   const RoleSchema = Yup.object().shape({
     name: Yup.string().required('Role name is required'),
     displayName: Yup.string().required('Display name is required'),
     description: Yup.string().nullable(),
-    permissions: Yup.array().of(
-      Yup.string()
-    ).default([]),
+    permissions: Yup.array().of(Yup.string()).default([]),
     isSystem: Yup.boolean().default(false),
   });
 
@@ -118,7 +96,7 @@ export default function RoleCreateForm({ open, onClose, role }) {
       }
       onClose(true);
     } catch (error) {
-      showAlert(error.message, 'error');
+      showAlert(error.message || 'Operation failed', 'error');
     }
   });
 
@@ -145,12 +123,22 @@ export default function RoleCreateForm({ open, onClose, role }) {
             </Stack>
           </Box>
         </FormProvider>
-        <PermissionsManager {...permissionsProps} />
+        <PermissionsManager
+          resources={resources}
+          permissions={role?.permissions || []}
+        />
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={() => onClose(false)}>Cancel</Button>
-        <LoadingButton variant="contained" loading={isSubmitting} onClick={onSubmit}>
+        <Button onClick={() => onClose(false)} disabled={isSubmitting}>
+          Cancel
+        </Button>
+        <LoadingButton
+          variant="contained"
+          loading={isSubmitting}
+          onClick={onSubmit}
+          disabled={loadingResources || !!errorResources}
+        >
           {role?._id ? 'Update' : 'Create'} Role
         </LoadingButton>
       </DialogActions>

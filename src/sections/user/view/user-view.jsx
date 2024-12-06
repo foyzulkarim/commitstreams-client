@@ -148,6 +148,7 @@ export default function UserPage() {
                       email={row.email}
                       authType={row.authType}
                       isAdmin={row.isAdmin}
+                      isSuperAdmin={row.isSuperAdmin}
                       handleClick={(event) => handleClick(row)}
                       searchTerm={filterName}
                     />

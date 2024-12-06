@@ -29,32 +29,36 @@ const PermissionsManager = ({ resources, permissions }) => {
     client: false,
   });
   const [resourceSelections, setResourceSelections] = useState({});
-  const [setHasChanges] = useState(false);
   const [showUnsavedAlert, setShowUnsavedAlert] = useState(false);
 
-  // Initialize resource selections
   useEffect(() => {
     const selections = {};
     resources.forEach((resource) => {
-      const permission = permissions.find(
-        (p) => p.resource_id === resource._id
-      );
+      selections[resource._id] = {
+        methods: new Set(),
+        actions: {},
+      };
+
+      // Initialize API permissions
       if (resource.api) {
-        selections[resource._id] = {
-          methods: new Set(permission?.api_access?.methods || []),
-        };
+        resource.api.methods.forEach((method) => {
+          const permissionString = `${resource._id}_api_${method}`;
+          if (permissions.includes(permissionString)) {
+            selections[resource._id].methods.add(method);
+          }
+        });
       }
+
+      // Initialize Client permissions
       if (resource.client) {
-        selections[resource._id] = {
-          actions:
-            permission?.client_access?.actions?.reduce((acc, action) => {
-              acc[action.name] = {
-                show: action.visibility?.show || false,
-                enabled: action.visibility?.enabled || false,
-              };
-              return acc;
-            }, {}) || {},
-        };
+        resource.client.actions.forEach((action) => {
+          const showPermission = `${resource._id}_client_${action.name}_show`;
+          const enablePermission = `${resource._id}_client_${action.name}_enable`;
+          selections[resource._id].actions[action.name] = {
+            show: permissions.includes(showPermission),
+            enabled: permissions.includes(enablePermission),
+          };
+        });
       }
     });
     setResourceSelections(selections);
@@ -78,14 +82,17 @@ const PermissionsManager = ({ resources, permissions }) => {
     resources
       .filter((resource) => resource.api && !resource.is_system_managed)
       .forEach((resource) => {
-        newSelections[resource._id] = {
-          ...newSelections[resource._id],
-          methods: new Set(checked ? resource.api.methods : []),
-        };
+        if (checked) {
+          resource.api.methods.forEach((method) => {
+            newSelections[resource._id].methods.add(method);
+          });
+        } else {
+          newSelections[resource._id].methods.clear();
+        }
       });
 
     setResourceSelections(newSelections);
-    setHasChanges(true);
+    setShowUnsavedAlert(true);
   };
 
   const handleMethodToggle = (resourceId, method) => {
@@ -96,7 +103,7 @@ const PermissionsManager = ({ resources, permissions }) => {
       newSelections[resourceId].methods.add(method);
     }
     setResourceSelections(newSelections);
-    setHasChanges(true);
+    setShowUnsavedAlert(true);
   };
 
   const handleSelectAllClient = (checked) => {
@@ -106,20 +113,16 @@ const PermissionsManager = ({ resources, permissions }) => {
     resources
       .filter((resource) => resource.client && !resource.is_system_managed)
       .forEach((resource) => {
-        newSelections[resource._id] = {
-          ...newSelections[resource._id],
-          actions: resource.client.actions.reduce((acc, action) => {
-            acc[action.name] = {
-              show: checked,
-              enabled: checked,
-            };
-            return acc;
-          }, {}),
-        };
+        resource.client.actions.forEach((action) => {
+          newSelections[resource._id].actions[action.name] = {
+            show: checked,
+            enabled: checked,
+          };
+        });
       });
 
     setResourceSelections(newSelections);
-    setHasChanges(true);
+    setShowUnsavedAlert(true);
   };
 
   // Render API Permissions Section
@@ -194,12 +197,8 @@ const PermissionsManager = ({ resources, permissions }) => {
                         key={method}
                         control={
                           <Switch
-                            checked={resourceSelections[
-                              resource._id
-                            ]?.methods?.has(method)}
-                            onChange={() =>
-                              handleMethodToggle(resource._id, method)
-                            }
+                            checked={resourceSelections[resource._id]?.methods?.has(method)}
+                            onChange={() => handleMethodToggle(resource._id, method)}
                             disabled={resource.is_system_managed}
                           />
                         }
@@ -309,7 +308,7 @@ const PermissionsManager = ({ resources, permissions }) => {
                                       action.name
                                     ].show;
                                   setResourceSelections(newSelections);
-                                  setHasChanges(true);
+                                  setShowUnsavedAlert(true);
                                 }}
                                 disabled={resource.is_system_managed}
                               />
@@ -335,7 +334,7 @@ const PermissionsManager = ({ resources, permissions }) => {
                                       action.name
                                     ].enabled;
                                   setResourceSelections(newSelections);
-                                  setHasChanges(true);
+                                  setShowUnsavedAlert(true);
                                 }}
                                 disabled={
                                   resource.is_system_managed ||

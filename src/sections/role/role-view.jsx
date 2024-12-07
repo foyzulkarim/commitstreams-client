@@ -39,7 +39,24 @@ export default function RoleView() {
   const [total, setTotal] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
 
+  const [resources, setResources] = useState([]);
+
   const prevFilterNameRef = useRef();
+
+  // Fetch resources from the server
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const data = await fetchWrapperAxios('/v1/resources/search');
+        setResources(data);
+      } catch (error) {
+        showAlert('Failed to load resources.', 'error');
+      }
+    }
+
+    fetchResources();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const prevFilterName = prevFilterNameRef.current;
@@ -101,8 +118,6 @@ export default function RoleView() {
     setOpenDialog(false);
   }
 
-  console.log('Role', roles);
-
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -125,9 +140,7 @@ export default function RoleView() {
                 onRequestSort={handleSort}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'displayName', label: 'Display Name' },
                   { id: 'description', label: 'Description' },
-                  { id: 'permissions', label: 'Permissions' },
                 ]}
               />
               <TableBody>
@@ -136,9 +149,7 @@ export default function RoleView() {
                     <RoleTableRow
                       key={row._id}
                       name={row.name}
-                      displayName={row.displayName}
                       description={row.description}
-                      permissions={row.permissions}
                       handleClick={() => handleClick(row)}
                       searchTerm={filterName}
                     />
@@ -158,14 +169,12 @@ export default function RoleView() {
           rowsPerPageOptions={[]}
         />
       </Card>
-      {selectedRole && (
+      {selectedRole && openDialog && (
         <RoleCreateForm
           open={openDialog}
           onClose={closeDialog}
-          role={{
-            ...selectedRole,
-            permissions: selectedRole.permissions.map((perm) => perm.permissionString),
-          }}
+          role={selectedRole}
+          resources={resources}
         />
       )}
     </Container>

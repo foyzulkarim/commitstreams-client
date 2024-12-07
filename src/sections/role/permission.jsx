@@ -4,18 +4,14 @@ import React, { useState, useEffect } from "react";
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
 import Switch from '@mui/material/Switch';
-import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
-import InfoIcon from '@mui/icons-material/Info';
 import LockIcon from '@mui/icons-material/Lock';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import ShieldIcon from '@mui/icons-material/Shield';
 import MonitorIcon from '@mui/icons-material/Monitor';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -35,30 +31,21 @@ const PermissionsManager = ({ resources, permissions }) => {
     const selections = {};
     resources.forEach((resource) => {
       selections[resource._id] = {
-        methods: new Set(),
-        actions: {},
+        identifiers: new Set(),
       };
 
       // Initialize API permissions
-      if (resource.api) {
-        resource.api.methods.forEach((method) => {
-          const permissionString = `${resource._id}_api_${method}`;
-          if (permissions.includes(permissionString)) {
-            selections[resource._id].methods.add(method);
-          }
-        });
+      if (resource.type === 'api') {
+        if (permissions.api?.includes(resource.identifier)) {
+          selections[resource._id].identifiers.add(resource.identifier);
+        }
       }
 
       // Initialize Client permissions
-      if (resource.client) {
-        resource.client.actions.forEach((action) => {
-          const showPermission = `${resource._id}_client_${action.name}_show`;
-          const enablePermission = `${resource._id}_client_${action.name}_enable`;
-          selections[resource._id].actions[action.name] = {
-            show: permissions.includes(showPermission),
-            enabled: permissions.includes(enablePermission),
-          };
-        });
+      if (resource.type === 'client') {
+        if (permissions.client?.includes(resource.identifier)) {
+          selections[resource._id].identifiers.add(resource.identifier);
+        }
       }
     });
     setResourceSelections(selections);
@@ -80,14 +67,12 @@ const PermissionsManager = ({ resources, permissions }) => {
     const newSelections = { ...resourceSelections };
 
     resources
-      .filter((resource) => resource.api && !resource.is_system_managed)
+      .filter((resource) => resource.type === 'api')
       .forEach((resource) => {
         if (checked) {
-          resource.api.methods.forEach((method) => {
-            newSelections[resource._id].methods.add(method);
-          });
+          newSelections[resource._id].identifiers.add(resource.identifier);
         } else {
-          newSelections[resource._id].methods.clear();
+          newSelections[resource._id].identifiers.delete(resource.identifier);
         }
       });
 
@@ -95,12 +80,12 @@ const PermissionsManager = ({ resources, permissions }) => {
     setShowUnsavedAlert(true);
   };
 
-  const handleMethodToggle = (resourceId, method) => {
+  const handleMethodToggle = (resourceId, identifier) => {
     const newSelections = { ...resourceSelections };
-    if (newSelections[resourceId].methods.has(method)) {
-      newSelections[resourceId].methods.delete(method);
+    if (newSelections[resourceId].identifiers.has(identifier)) {
+      newSelections[resourceId].identifiers.delete(identifier);
     } else {
-      newSelections[resourceId].methods.add(method);
+      newSelections[resourceId].identifiers.add(identifier);
     }
     setResourceSelections(newSelections);
     setShowUnsavedAlert(true);
@@ -111,19 +96,31 @@ const PermissionsManager = ({ resources, permissions }) => {
     const newSelections = { ...resourceSelections };
 
     resources
-      .filter((resource) => resource.client && !resource.is_system_managed)
+      .filter((resource) => resource.type === 'client')
       .forEach((resource) => {
-        resource.client.actions.forEach((action) => {
-          newSelections[resource._id].actions[action.name] = {
-            show: checked,
-            enabled: checked,
-          };
-        });
+        if (checked) {
+          newSelections[resource._id].identifiers.add(resource.identifier);
+        } else {
+          newSelections[resource._id].identifiers.delete(resource.identifier);
+        }
       });
 
     setResourceSelections(newSelections);
     setShowUnsavedAlert(true);
   };
+
+  const groupResourcesByModule = (data) => data.reduce((acc, resource) => {
+    if (!acc[resource.module]) {
+      acc[resource.module] = [];
+    }
+
+    // Add the resource to its module array
+    acc[resource.module].push(resource);
+
+    return acc;
+  }, {});
+
+  const groupedResources = groupResourcesByModule(resources);
 
   // Render API Permissions Section
   const renderAPIPermissions = () => (
@@ -138,79 +135,83 @@ const PermissionsManager = ({ resources, permissions }) => {
         label="Select All API Permissions"
       />
 
-      {resources
-        .filter((resource) => resource.api)
-        .map((resource) => {
-          const isExpanded = expandedCards[resource._id];
+      {Object.keys(groupedResources).map((moduleName) => {
+        const resourcesByModule = groupedResources[moduleName];
+        return (
+          <Box key={moduleName}>
+            <Typography variant="h6">{moduleName}</Typography>
+            {
+              resourcesByModule
+                .filter((resource) => resource.type === 'api')
+                .map((resource) => {
+                  const isExpanded = expandedCards[resource._id];
+                  const isChecked = resourceSelections[resource._id]?.identifiers?.has(resource.identifier);
 
-          return (
-            <Paper key={resource._id} sx={{ mt: 2, p: 2 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => toggleExpanded(resource._id)}
-                  >
-                    {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
-                  <Typography variant="h6" sx={{ ml: 1 }}>
-                    {resource.name}
-                    {resource.is_system_managed && (
-                      <Chip
-                        label="System"
-                        size="small"
-                        sx={{ ml: 1 }}
-                        color="default"
-                      />
-                    )}
-                  </Typography>
-                </Box>
-                <Tooltip title="View API details">
-                  <IconButton size="small">
-                    <InfoIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+                  return (
+                    <Paper key={resource._id} sx={{ mt: 1, p: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <IconButton
+                            size="small"
+                            onClick={() => toggleExpanded(resource._id)}
+                          >
+                            {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                          </IconButton>
+                          <Typography variant="h6" sx={{ ml: 1 }}>
+                            {resource.label}
+                          </Typography>
+                        </Box>
+                        <FormControlLabel
+                          key={resource.identifier}
+                          control={
+                            <Switch
+                              checked={isChecked}
+                              onChange={() => handleMethodToggle(resource._id, resource.identifier)}
+                            />
+                          }
+                        />
+                      </Box>
 
-              <Collapse in={isExpanded}>
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    {resource.api.endpoint}
-                  </Typography>
+                      <Collapse in={isExpanded}>
+                        <Box sx={{ mt: 1 }}>
+                          <Typography variant="body2" color="textSecondary">
+                            {resource.identifier}
+                          </Typography>
 
-                  <Box
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(4, 1fr)",
-                      gap: 2,
-                      mt: 2,
-                    }}
-                  >
-                    {resource.api.methods.map((method) => (
-                      <FormControlLabel
-                        key={method}
-                        control={
-                          <Switch
-                            checked={resourceSelections[resource._id]?.methods?.has(method)}
-                            onChange={() => handleMethodToggle(resource._id, method)}
-                            disabled={resource.is_system_managed}
-                          />
-                        }
-                        label={method}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              </Collapse>
-            </Paper>
-          );
-        })}
+                          <Box
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(4, 1fr)",
+                              gap: 2,
+                              mt: 2,
+                            }}
+                          >
+                            <FormControlLabel
+                              key={resource.identifier}
+                              control={
+                                <Switch
+                                  checked={isChecked}
+                                  onChange={() => handleMethodToggle(resource._id, resource.identifier)}
+                                />
+                              }
+                              label={resource.identifier}
+                            />
+                          </Box>
+                        </Box>
+                      </Collapse>
+                    </Paper>
+                  );
+                })}
+          </Box>
+
+        );
+      })}
     </Box>
   );
 
@@ -227,134 +228,63 @@ const PermissionsManager = ({ resources, permissions }) => {
         label="Select All UI Permissions"
       />
 
-      {resources
-        .filter((resource) => resource.client)
-        .map((resource) => {
-          const isExpanded = expandedCards[resource._id];
+      {Object.keys(groupedResources).map((moduleName) => {
+        const resourcesByModule = groupedResources[moduleName];
+        return (
+          <Box key={moduleName}>
+            <Typography variant="h6">{moduleName}</Typography>
+            {resourcesByModule
+              .filter((resource) => resource.type === 'client')
+              .map((resource) => {
+                const isExpanded = expandedCards[resource._id];
+                const isChecked = resourceSelections[resource._id]?.identifiers?.has(resource.identifier);
 
-          return (
-            <Paper key={resource._id} sx={{ mt: 2, p: 2 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => toggleExpanded(resource._id)}
-                  >
-                    {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
-                  <ShieldIcon sx={{ mr: 1 }} />
-                  <Typography variant="h6">
-                    {resource.name}
-                    {resource.is_system_managed && (
-                      <Chip
-                        label="System"
-                        size="small"
-                        sx={{ ml: 1 }}
-                        color="default"
-                      />
-                    )}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Collapse in={isExpanded}>
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body2" color="textSecondary">
-                    {resource.client.component}
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(3, 1fr)",
-                      gap: 2,
-                      mt: 2,
-                    }}
-                  >
-                    {resource.client.actions.map((action) => (
-                      <Paper key={action.name} sx={{ p: 2 }}>
-                        <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                          {action.label}
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 1,
-                          }}
+                return (
+                  <Paper key={resource._id} sx={{ mt: 2, p: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <IconButton
+                          size="small"
+                          onClick={() => toggleExpanded(resource._id)}
                         >
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={
-                                  resourceSelections[resource._id]?.actions?.[
-                                    action.name
-                                  ]?.show
-                                }
-                                onChange={() => {
-                                  const newSelections = {
-                                    ...resourceSelections,
-                                  };
-                                  newSelections[resource._id].actions[
-                                    action.name
-                                  ].show =
-                                    !newSelections[resource._id].actions[
-                                      action.name
-                                    ].show;
-                                  setResourceSelections(newSelections);
-                                  setShowUnsavedAlert(true);
-                                }}
-                                disabled={resource.is_system_managed}
-                              />
-                            }
-                            label="Show"
+                          {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                        <Typography variant="h6">
+                          {resource.label}
+                        </Typography>
+                      </Box>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={isChecked}
+                            onChange={() => handleMethodToggle(resource._id, resource.identifier)}
                           />
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={
-                                  resourceSelections[resource._id]?.actions?.[
-                                    action.name
-                                  ]?.enabled
-                                }
-                                onChange={() => {
-                                  const newSelections = {
-                                    ...resourceSelections,
-                                  };
-                                  newSelections[resource._id].actions[
-                                    action.name
-                                  ].enabled =
-                                    !newSelections[resource._id].actions[
-                                      action.name
-                                    ].enabled;
-                                  setResourceSelections(newSelections);
-                                  setShowUnsavedAlert(true);
-                                }}
-                                disabled={
-                                  resource.is_system_managed ||
-                                  !resourceSelections[resource._id]?.actions?.[
-                                    action.name
-                                  ]?.show
-                                }
-                              />
-                            }
-                            label="Enable"
-                          />
-                        </Box>
-                      </Paper>
-                    ))}
-                  </Box>
-                </Box>
-              </Collapse>
-            </Paper>
-          );
-        })}
+                        }
+                      />
+                    </Box>
+
+                    <Collapse in={isExpanded}>
+                      <Box sx={{ mt: 1 }}>
+                        <Typography variant="body2" color="textSecondary">
+                          {resource.identifier}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {resource.description}
+                        </Typography>
+                      </Box>
+                    </Collapse>
+                  </Paper>
+                );
+              })}
+          </Box>
+        );
+      })}
     </Box>
   );
 
@@ -417,7 +347,7 @@ const PermissionsManager = ({ resources, permissions }) => {
 
 PermissionsManager.propTypes = {
   resources: PropTypes.array.isRequired,
-  permissions: PropTypes.array.isRequired,
+  permissions: PropTypes.object.isRequired,
 };
 
 export default PermissionsManager;

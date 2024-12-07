@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { bgGradient } from 'src/theme/css';
+import { AuthContext } from 'src/contexts/AuthContext';
 
 import Iconify from 'src/components/iconify';
 
@@ -22,6 +23,8 @@ export default function LoginView() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const { setAuthState } = useContext(AuthContext);
 
   const handleGitHubLogin = () => {
     window.location.href = `${apiUrl}/auth/github`;
@@ -49,6 +52,7 @@ export default function LoginView() {
 
       if (response.ok) {
         // Login successful
+        setAuthState(data.user);
         navigate('/'); // Redirect to dashboard or home page
       } else {
         // Login failed

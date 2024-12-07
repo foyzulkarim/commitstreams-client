@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, createContext } from 'react';
 
 import { useAlert } from './AlertContext';
 
@@ -51,7 +51,6 @@ const AuthProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   const setAuthState = (authData) => {
     setIsAuthenticated(true);
     setUserProfile(authData);
@@ -62,13 +61,17 @@ const AuthProvider = ({ children }) => {
     setUserProfile(null);
   };
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     window.location.href = `${apiUrl}/logout`;
-  }
+  }, [apiUrl]);
+
+  const contextValue = useMemo(
+    () => ({ isAuthenticated, userProfile, setAuthState, clearAuthState, logout }),
+    [isAuthenticated, userProfile, logout]
+  );
 
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <AuthContext.Provider value={{ isAuthenticated, userProfile, setAuthState, clearAuthState, logout }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

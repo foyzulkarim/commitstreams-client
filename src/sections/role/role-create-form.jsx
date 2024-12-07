@@ -25,39 +25,14 @@ import PermissionsManager from './permission';
 
 // ----------------------------------------------------------------------
 
-export default function RoleCreateForm({ open, onClose, role }) {
+export default function RoleCreateForm({ open, onClose, role, resources }) {
   const { showAlert } = useAlert();
-
-  const [resources, setResources] = useState([]);
-  const [loadingResources, setLoadingResources] = useState(false);
-  const [errorResources, setErrorResources] = useState(null);
-
-  // Fetch resources from the server
-  useEffect(() => {
-    const fetchResources = async () => {
-      setLoadingResources(true);
-      setErrorResources(null);
-      try {
-        const data = await fetchWrapperAxios('/v1/resources');
-        setResources(data.resources);
-      } catch (error) {
-        setErrorResources('Failed to load resources.');
-        showAlert('Failed to load resources.', 'error');
-      } finally {
-        setLoadingResources(false);
-      }
-    };
-
-    if (open) {
-      fetchResources();
-    }
-  }, [open, showAlert]);
 
   const RoleSchema = Yup.object().shape({
     name: Yup.string().required('Role name is required'),
     displayName: Yup.string().required('Display name is required'),
     description: Yup.string().nullable(),
-    permissions: Yup.array().of(Yup.string()).default([]),
+    permissions: Yup.object().default({}),
     isSystem: Yup.boolean().default(false),
   });
 
@@ -65,7 +40,7 @@ export default function RoleCreateForm({ open, onClose, role }) {
     name: role?.name || '',
     displayName: role?.displayName || '',
     description: role?.description || '',
-    permissions: role?.permissions || [],
+    permissions: role?.permissions || {},
     isSystem: role?.isSystem || false,
   };
 
@@ -123,10 +98,12 @@ export default function RoleCreateForm({ open, onClose, role }) {
             </Stack>
           </Box>
         </FormProvider>
-        <PermissionsManager
-          resources={resources}
-          permissions={role?.permissions || []}
-        />
+        {resources?.length > 0 && (
+          <PermissionsManager
+            resources={resources}
+            permissions={role?.permissions || {}}
+          />
+        )}
       </DialogContent>
 
       <DialogActions>
@@ -137,7 +114,7 @@ export default function RoleCreateForm({ open, onClose, role }) {
           variant="contained"
           loading={isSubmitting}
           onClick={onSubmit}
-          disabled={loadingResources || !!errorResources}
+          disabled={isSubmitting}
         >
           {role?._id ? 'Update' : 'Create'} Role
         </LoadingButton>
@@ -150,4 +127,5 @@ RoleCreateForm.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   role: PropTypes.object,
+  resources: PropTypes.array,
 };

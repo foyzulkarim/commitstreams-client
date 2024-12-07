@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import PropTypes from 'prop-types';
-import { lazy, Suspense, useContext } from 'react';
+import { lazy, Suspense, useEffect, useContext } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
@@ -24,9 +24,11 @@ export const ResourcePage = lazy(() => import('src/pages/resource')); // Add thi
 const ProtectedComponent = ({ children }) => {
   const { isAuthenticated, clearAuthState } = useContext(AuthContext);
 
-  if (!isAuthenticated) {
-    clearAuthState();
-  };
+  useEffect(() => {
+    if (!isAuthenticated) {
+      clearAuthState();
+    }
+  }, [isAuthenticated, clearAuthState]);
 
   return children;
 };

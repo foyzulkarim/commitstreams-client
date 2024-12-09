@@ -17,7 +17,9 @@ export const FeedPage = lazy(() => import('src/pages/feed'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const RolePage = lazy(() => import('src/pages/role'));
-export const ResourcePage = lazy(() => import('src/pages/resource')); // Add this line
+export const ResourcePage = lazy(() => import('src/pages/resource'));
+export const VerifyEmailPage = lazy(() => import('src/pages/verify-email'));
+export const ResendVerificationPage = lazy(() => import('src/pages/resend-verification'));
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +58,7 @@ export default function Router() {
         { path: 'analytics', element: <IndexPage /> },
         { element: <FeedPage />, index: true },
         { path: 'role', element: <RolePage /> },
-        { path: 'resource', element: <ResourcePage /> }, // Add this line
+        { path: 'resource', element: <ResourcePage /> },
       ],
     },
     {
@@ -66,6 +68,14 @@ export default function Router() {
     {
       path: 'login-success',
       element: <LoginSuccess />,
+    },
+    {
+      path: 'verify-email',
+      element: <VerifyEmailPage />,
+    },
+    {
+      path: 'resend-verification',
+      element: <ResendVerificationPage />,
     },
     {
       path: '404',

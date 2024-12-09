@@ -23,6 +23,7 @@ export default function LoginView() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isEmailNotVerified, setIsEmailNotVerified] = useState(false);
 
   const { setAuthState } = useContext(AuthContext);
 
@@ -37,6 +38,7 @@ export default function LoginView() {
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setIsEmailNotVerified(false);
 
     try {
       const response = await fetch(`${apiUrl}/login`, {
@@ -54,6 +56,9 @@ export default function LoginView() {
         // Login successful
         setAuthState(data.user);
         navigate('/'); // Redirect to dashboard or home page
+      } else if (data.reason === 'email-not-verified') {
+        setError('Email not verified. Please check your email for a verification link.');
+        setIsEmailNotVerified(true);
       } else {
         // Login failed
         setError(data.message || 'Login failed');
@@ -101,6 +106,14 @@ export default function LoginView() {
             {error && (
               <Typography color="error" variant="body2">
                 {error}
+                {isEmailNotVerified && (
+                  <>
+                    {' '}
+                    <Link component={RouterLink} to="/resend-verification" variant="subtitle2">
+                      Resend verification email
+                    </Link>
+                  </>
+                )}
               </Typography>
             )}
             <Button

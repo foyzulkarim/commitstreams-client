@@ -6,13 +6,11 @@ const navConfig = [
   {
     title: 'Feed',
     path: '/',
-    identifier: 'sidebar-feed',
     icon: <Home size={24} />,
   },
   {
     title: 'repositories',
     path: '/repositories',
-    identifier: 'sidebar-repositories',
     icon: <Database size={24} />,
   },
   {
@@ -36,7 +34,6 @@ const navConfig = [
   {
     title: 'analytics',
     path: '/analytics',
-    identifier: 'sidebar-analytics',
     icon: <BarChart size={24} />,
   },
 ];

@@ -159,7 +159,12 @@ Nav.propTypes = {
 function NavItem({ item, userProfile }) {
   const pathname = usePathname();
   const active = item.path === pathname;
-  const hasPermission = userProfile?.permissions?.client?.includes(item.identifier);
+  let hasPermission = true;
+  if (item.identifier) {
+    hasPermission = userProfile?.permissions?.client?.includes(item.identifier);
+  }
+
+
 
   if (!hasPermission) {
     return null;

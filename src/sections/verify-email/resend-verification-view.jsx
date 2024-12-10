@@ -83,7 +83,7 @@ export default function ResendVerificationView() {
             </Typography>
 
             <Typography variant="body2" align="center" sx={{ color: 'text.secondary' }}>
-              Enter your email address and we'll send you a new verification link.
+              Enter your email address and we&apos;ll send you a new verification link.
             </Typography>
 
             <TextField

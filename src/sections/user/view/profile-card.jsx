@@ -22,7 +22,7 @@ const ProfileCard = ({
   username: login,
   avatarUrl: avatar_url,
   html_url,
-  name,
+  displayName: name,
   company,
   blog,
   location,
@@ -49,7 +49,7 @@ const ProfileCard = ({
           </Link>
         </Typography>
       }
-      subheader={`@${login}`}
+      subheader={`${name}`}
     />
     <CardContent>
       {bio && (
@@ -147,7 +147,7 @@ ProfileCard.propTypes = {
   username: PropTypes.string,
   avatarUrl: PropTypes.string,
   html_url: PropTypes.string,
-  name: PropTypes.string,
+  displayName: PropTypes.string,
   company: PropTypes.string,
   blog: PropTypes.string,
   location: PropTypes.string,

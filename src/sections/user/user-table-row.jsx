@@ -15,6 +15,7 @@ export default function UserTableRow({
   handleClick,
   isAdmin,
   isSuperAdmin,
+  role,
 }) {
   return (
     <TableRow hover tabIndex={-1} role="checkbox" onClick={handleClick}>
@@ -30,10 +31,10 @@ export default function UserTableRow({
           text={email}
           searchKeyword={searchTerm}
         />
-        {isAdmin && <Label color="warning" style={{ marginRight: '8px' }}>Admin</Label>}
-        {isSuperAdmin && <Label color="success" style={{ marginRight: '8px' }}>Super Admin</Label>}
       </TableCell>
-
+      <TableCell style={{ padding: '16px' }}>
+        <Label {...(isSuperAdmin ? { color: 'success' } : {})}>{role}</Label>
+      </TableCell>
       <TableCell style={{ padding: '16px' }}>
         <Label>{authType}</Label>
       </TableCell>
@@ -50,4 +51,5 @@ UserTableRow.propTypes = {
   isAdmin: PropTypes.bool,
   isSuperAdmin: PropTypes.bool,
   searchTerm: PropTypes.string,
+  role: PropTypes.string,
 };

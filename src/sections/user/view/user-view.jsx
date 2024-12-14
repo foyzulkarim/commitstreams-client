@@ -136,6 +136,7 @@ export default function UserPage() {
                 headLabel={[
                   { id: 'displayName', label: 'Name' },
                   { id: 'email', label: 'Email' },
+                  { id: 'role', label: 'Role' },
                   { id: 'authType', label: 'Auth type' },
                 ]}
               />
@@ -149,6 +150,7 @@ export default function UserPage() {
                       authType={row.authType}
                       isAdmin={row.isAdmin}
                       isSuperAdmin={row.isSuperAdmin}
+                      role={row.role}
                       handleClick={(event) => handleClick(row)}
                       searchTerm={filterName}
                     />

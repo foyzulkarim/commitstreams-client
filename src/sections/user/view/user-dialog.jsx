@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -13,8 +13,10 @@ import { fetchWrapperAxios } from 'src/utils/api';
 import { useAlert } from 'src/contexts/AlertContext';
 import { AuthContext } from 'src/contexts/AuthContext';
 
-import ProfileCard from './profile-card';
+import Label from 'src/components/label';
 
+import ProfileCard from './profile-card';
+import RolesDropdown from './roles-dropdown';
 
 export default function AlertDialog({ open, closeDialog, user }) {
 
@@ -54,6 +56,38 @@ export default function AlertDialog({ open, closeDialog, user }) {
     message = 'You are the current user';
   }
 
+  // Add state to track available roles and selected role 
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(user.roleId);
+
+  // Load available roles on component mount
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const roles = await fetchWrapperAxios('/v1/roles/search');
+        setAvailableRoles(roles);
+      } catch (error) {
+        showAlert('Failed to load roles', 'error');
+      }
+    };
+    fetchRoles();
+  }, [showAlert]);
+
+  // Handler for when a role is selected
+  const handleRoleChange = async (role) => {
+    try {
+      await fetchWrapperAxios(`/v1/users/update-role/${user._id}`, {
+        method: 'PUT',
+        data: { roleId: role },
+      });
+      setSelectedRole(role);
+      showAlert('User role updated', 'success');
+      handleClose(true); // Refresh user list
+    } catch (error) {
+      showAlert('Failed to update user role', 'error');
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -68,6 +102,13 @@ export default function AlertDialog({ open, closeDialog, user }) {
         <DialogContentText id="alert-dialog-description">
           <ProfileCard user={user} {...user} />
         </DialogContentText>
+
+        {currentUser.isSuperAdmin && <RolesDropdown
+          roles={availableRoles}
+          selectedRole={selectedRole}
+          onRoleChange={handleRoleChange}
+        />}
+        {!currentUser.isSuperAdmin && <Label>{user.role}</Label>}
       </DialogContent>
       <DialogActions>
         {message}

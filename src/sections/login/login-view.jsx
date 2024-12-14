@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { bgGradient } from 'src/theme/css';
+import { AuthContext } from 'src/contexts/AuthContext';
 
 import Iconify from 'src/components/iconify';
 
@@ -22,6 +23,9 @@ export default function LoginView() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isEmailNotVerified, setIsEmailNotVerified] = useState(false);
+
+  const { setAuthState } = useContext(AuthContext);
 
   const handleGitHubLogin = () => {
     window.location.href = `${apiUrl}/auth/github`;
@@ -34,6 +38,7 @@ export default function LoginView() {
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setIsEmailNotVerified(false);
 
     try {
       const response = await fetch(`${apiUrl}/login`, {
@@ -49,7 +54,11 @@ export default function LoginView() {
 
       if (response.ok) {
         // Login successful
+        setAuthState(data.user);
         navigate('/'); // Redirect to dashboard or home page
+      } else if (data.reason === 'email-not-verified') {
+        setError('Email not verified. Please check your email for a verification link.');
+        setIsEmailNotVerified(true);
       } else {
         // Login failed
         setError(data.message || 'Login failed');
@@ -97,6 +106,14 @@ export default function LoginView() {
             {error && (
               <Typography color="error" variant="body2">
                 {error}
+                {isEmailNotVerified && (
+                  <>
+                    {' '}
+                    <Link component={RouterLink} to="/resend-verification" variant="subtitle2">
+                      Resend verification email
+                    </Link>
+                  </>
+                )}
               </Typography>
             )}
             <Button

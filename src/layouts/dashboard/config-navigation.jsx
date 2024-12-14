@@ -16,16 +16,19 @@ const navConfig = [
   {
     title: 'users',
     path: '/user',
+    identifier: 'sidebar-users',
     icon: <Users size={24} />,
   },
   {
     title: 'roles',
     path: '/role',
+    identifier: 'sidebar-roles',
     icon: <Shield size={24} />,
   },
   {
     title: 'resources',
     path: '/resource',
+    identifier: 'sidebar-resources',
     icon: <Box size={24} />,
   },
   {

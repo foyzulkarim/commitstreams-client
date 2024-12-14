@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { RoleView } from 'src/sections/role/view';
+import { RoleView } from 'src/sections/role';
 
 // ----------------------------------------------------------------------
 

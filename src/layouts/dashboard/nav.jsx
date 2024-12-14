@@ -1,5 +1,5 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useEffect, useContext } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -17,9 +17,7 @@ import { RouterLink } from 'src/routes/components';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { account } from 'src/_mock/account';
-import { AuthContext } from 'src/contexts/AuthContext';
 
-// import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
 import { NAV } from './config-layout';
@@ -27,12 +25,10 @@ import navConfig from './config-navigation';
 
 // ----------------------------------------------------------------------
 
-export default function Nav({ openNav, onCloseNav }) {
+export default function Nav({ openNav, onCloseNav, userProfile }) {
   const pathname = usePathname();
 
   const upLg = useResponsive('up', 'lg');
-
-  const { userProfile } = useContext(AuthContext);
 
 
   useEffect(() => {
@@ -67,10 +63,10 @@ export default function Nav({ openNav, onCloseNav }) {
     </Box>
   );
 
-  const renderMenu = (
+  const renderMenu = (profile) => (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
       {navConfig.map((item) => (
-        <NavItem key={item.title} item={item} />
+        <NavItem key={item.title} item={item} userProfile={profile} />
       ))}
     </Stack>
   );
@@ -108,7 +104,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
       {renderAccount}
 
-      {renderMenu}
+      {renderMenu(userProfile)}
 
       <Box sx={{ flexGrow: 1 }} />
 
@@ -154,14 +150,24 @@ export default function Nav({ openNav, onCloseNav }) {
 Nav.propTypes = {
   openNav: PropTypes.bool,
   onCloseNav: PropTypes.func,
+  userProfile: PropTypes.object,
 };
 
 // ----------------------------------------------------------------------
 
-function NavItem({ item }) {
+function NavItem({ item, userProfile }) {
   const pathname = usePathname();
-
   const active = item.path === pathname;
+  let hasPermission = true;
+  if (item.identifier) {
+    hasPermission = userProfile?.permissions?.client?.includes(item.identifier);
+  }
+
+
+
+  if (!hasPermission) {
+    return null;
+  }
 
   return (
     <ListItemButton
@@ -195,4 +201,5 @@ function NavItem({ item }) {
 
 NavItem.propTypes = {
   item: PropTypes.object,
+  userProfile: PropTypes.object,
 };

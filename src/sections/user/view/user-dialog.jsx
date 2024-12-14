@@ -31,21 +31,21 @@ export default function AlertDialog({ open, closeDialog, user }) {
     closeDialog(shouldRefetch);
   };
 
-  const handleFollow = async () => {
-    // api call to follow user: /v1/users/:username/follow
+  const handleActivationToggle = async () => {
     try {
-      await fetchWrapperAxios(`/v1/users/${user._id}/follow`);
-      showAlert('User followed', 'success');
+      const action = user.isDeactivated ? 'activate' : 'deactivate';
+      await fetchWrapperAxios(`/v1/users/${user._id}/${action}`, {
+        method: 'PUT',
+      });
+      showAlert(`User ${action}d successfully`, 'success');
       handleClose(true);
     } catch (error) {
-      showAlert('Follow user error', 'error');
-      handleClose();
+      showAlert(`Failed to ${user.isDeactivated ? 'activate' : 'deactivate'} user`, 'error');
     }
-  }
+  };
 
   // isDisable will be true if the user is the current user or the user is a demo user or if teh  current user is already in the followers list
   const isAlreadyFollowing = followers.some(follower => follower._id === currentUser._id);
-  const isDisable = user._id === currentUser._id || user.isDemo || isAlreadyFollowing;
 
   let message = '';
   if (isAlreadyFollowing) {
@@ -88,6 +88,9 @@ export default function AlertDialog({ open, closeDialog, user }) {
     }
   };
 
+  // Check if current user can manage user activation
+  const canManageActivation = currentUser.isSuperAdmin || currentUser.isAdmin;
+
   return (
     <Dialog
       open={open}
@@ -112,7 +115,14 @@ export default function AlertDialog({ open, closeDialog, user }) {
       </DialogContent>
       <DialogActions>
         {message}
-        <Button disabled={isDisable} onClick={handleFollow}>Follow</Button>
+        {canManageActivation && user._id !== currentUser._id && !user.isDemo && (
+          <Button
+            onClick={handleActivationToggle}
+            color={user.isDeactivated ? 'success' : 'error'}
+          >
+            {user.isDeactivated ? 'Activate' : 'Deactivate'}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

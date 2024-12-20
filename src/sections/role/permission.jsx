@@ -5,9 +5,7 @@ import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Paper from '@mui/material/Paper';
-import Alert from '@mui/material/Alert';
 import Switch from '@mui/material/Switch';
-import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import LockIcon from '@mui/icons-material/Lock';
 import Typography from '@mui/material/Typography';
@@ -20,12 +18,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 const PermissionsManager = ({ resources, permissions }) => {
   const [activeTab, setActiveTab] = useState("api");
   const [expandedCards, setExpandedCards] = useState({});
-  const [selectAll, setSelectAll] = useState({
-    api: false,
-    client: false,
-  });
+
   const [resourceSelections, setResourceSelections] = useState({});
-  const [showUnsavedAlert, setShowUnsavedAlert] = useState(false);
 
   useEffect(() => {
     const selections = {};
@@ -62,24 +56,6 @@ const PermissionsManager = ({ resources, permissions }) => {
     }));
   };
 
-  const handleSelectAllAPI = (checked) => {
-    setSelectAll((prev) => ({ ...prev, api: checked }));
-    const newSelections = { ...resourceSelections };
-
-    resources
-      .filter((resource) => resource.type === 'api')
-      .forEach((resource) => {
-        if (checked) {
-          newSelections[resource._id].identifiers.add(resource.identifier);
-        } else {
-          newSelections[resource._id].identifiers.delete(resource.identifier);
-        }
-      });
-
-    setResourceSelections(newSelections);
-    setShowUnsavedAlert(true);
-  };
-
   const handleMethodToggle = (resourceId, identifier) => {
     const newSelections = { ...resourceSelections };
     if (newSelections[resourceId].identifiers.has(identifier)) {
@@ -88,25 +64,6 @@ const PermissionsManager = ({ resources, permissions }) => {
       newSelections[resourceId].identifiers.add(identifier);
     }
     setResourceSelections(newSelections);
-    setShowUnsavedAlert(true);
-  };
-
-  const handleSelectAllClient = (checked) => {
-    setSelectAll((prev) => ({ ...prev, client: checked }));
-    const newSelections = { ...resourceSelections };
-
-    resources
-      .filter((resource) => resource.type === 'client')
-      .forEach((resource) => {
-        if (checked) {
-          newSelections[resource._id].identifiers.add(resource.identifier);
-        } else {
-          newSelections[resource._id].identifiers.delete(resource.identifier);
-        }
-      });
-
-    setResourceSelections(newSelections);
-    setShowUnsavedAlert(true);
   };
 
   const groupResourcesByModule = (data) => data.reduce((acc, resource) => {
@@ -125,15 +82,6 @@ const PermissionsManager = ({ resources, permissions }) => {
   // Render API Permissions Section
   const renderAPIPermissions = () => (
     <Box sx={{ mt: 2 }}>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={selectAll.api}
-            onChange={(e) => handleSelectAllAPI(e.target.checked)}
-          />
-        }
-        label="Select All API Permissions"
-      />
 
       {Object.keys(groupedResources).map((moduleName) => {
         const resourcesByModule = groupedResources[moduleName];
@@ -171,6 +119,7 @@ const PermissionsManager = ({ resources, permissions }) => {
                           key={resource.identifier}
                           control={
                             <Switch
+                              disabled
                               checked={isChecked}
                               onChange={() => handleMethodToggle(resource._id, resource.identifier)}
                             />
@@ -196,6 +145,7 @@ const PermissionsManager = ({ resources, permissions }) => {
                               key={resource.identifier}
                               control={
                                 <Switch
+                                  disabled
                                   checked={isChecked}
                                   onChange={() => handleMethodToggle(resource._id, resource.identifier)}
                                 />
@@ -218,16 +168,6 @@ const PermissionsManager = ({ resources, permissions }) => {
   // Render Client Permissions Section
   const renderClientPermissions = () => (
     <Box sx={{ mt: 2 }}>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={selectAll.client}
-            onChange={(e) => handleSelectAllClient(e.target.checked)}
-          />
-        }
-        label="Select All UI Permissions"
-      />
-
       {Object.keys(groupedResources).map((moduleName) => {
         const resourcesByModule = groupedResources[moduleName];
         return (
@@ -262,6 +202,7 @@ const PermissionsManager = ({ resources, permissions }) => {
                       <FormControlLabel
                         control={
                           <Switch
+                            disabled
                             checked={isChecked}
                             onChange={() => handleMethodToggle(resource._id, resource.identifier)}
                           />
@@ -304,16 +245,6 @@ const PermissionsManager = ({ resources, permissions }) => {
           </Typography>
         </Box>
       </Box>
-
-      {showUnsavedAlert && (
-        <Alert
-          severity="warning"
-          sx={{ mb: 2 }}
-          onClose={() => setShowUnsavedAlert(false)}
-        >
-          You have unsaved changes. Don&apos;t forget to save before leaving!
-        </Alert>
-      )}
 
       <Paper sx={{ mb: 3 }}>
         <Tabs

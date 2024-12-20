@@ -91,6 +91,8 @@ export default function AlertDialog({ open, closeDialog, user }) {
   // Check if current user can manage user activation
   const canManageActivation = currentUser.isSuperAdmin || currentUser.isAdmin;
 
+  console.log('user dialog', { user, currentUser });
+
   return (
     <Dialog
       open={open}

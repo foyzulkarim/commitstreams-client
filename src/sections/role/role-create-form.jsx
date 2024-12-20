@@ -8,7 +8,6 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -78,7 +77,7 @@ export default function RoleCreateForm({ open, onClose, role, resources }) {
     <Dialog open={open} onClose={() => onClose(false)} maxWidth="sm" fullWidth>
       <DialogTitle>
         <Typography variant="h3">
-          {role?._id ? 'Edit Role' : 'Create New Role'}
+          View Role
         </Typography>
       </DialogTitle>
 
@@ -107,16 +106,8 @@ export default function RoleCreateForm({ open, onClose, role, resources }) {
 
       <DialogActions>
         <Button onClick={() => onClose(false)} disabled={isSubmitting}>
-          Cancel
+          Close
         </Button>
-        <LoadingButton
-          variant="contained"
-          loading={isSubmitting}
-          onClick={onSubmit}
-          disabled={isSubmitting}
-        >
-          {role?._id ? 'Update' : 'Create'} Role
-        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

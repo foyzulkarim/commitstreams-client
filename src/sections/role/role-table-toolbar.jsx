@@ -2,7 +2,6 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -15,10 +14,6 @@ import RoleCreateForm from './role-create-form';
 
 export default function RoleTableToolbar({ filterName, onFilterName }) {
   const [open, setOpen] = useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -47,13 +42,6 @@ export default function RoleTableToolbar({ filterName, onFilterName }) {
             </InputAdornment>
           }
         />
-        <Button
-          variant="contained"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={() => handleOpen()}
-        >
-          Add New Role
-        </Button>
       </Toolbar>
 
       <RoleCreateForm
